@@ -1,0 +1,17 @@
+[package]
+name = "study_test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+# standard crate data is left out
+[dev-dependencies]
+pretty_assertions = "1"
+criterion = "0.3"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
