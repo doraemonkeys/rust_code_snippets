@@ -1,0 +1,11 @@
+[package]
+name = "c-to-rust"
+version = "0.1.0"
+edition = "2021"
+
+
+[lib]
+#name为编译生成之后的lib库的名字，生成lib2_3.a(或lib2_3.lib)静态库和其他一些编译之后东西
+name = "2_3"
+# 指定rustc编译成什么库类型，这里指定为静态库类型。
+crate-type = ["staticlib"]

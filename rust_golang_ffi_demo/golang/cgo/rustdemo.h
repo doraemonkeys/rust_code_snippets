@@ -1,0 +1,1 @@
+char* rustdemo(char* name);

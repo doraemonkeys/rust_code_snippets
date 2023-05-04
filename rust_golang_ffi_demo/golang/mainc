@@ -1,0 +1,12 @@
+#include <stdio.h>
+
+extern char* rustdemo(char* name);
+
+// 将rustdemo.dll动态链接库放到当前目录下
+// gcc -o test_c main.c rustdemo.dll
+int main() {
+    char* name = "Rust";
+    char* result = rustdemo(name);
+    printf("%s\n", result);
+    return 0;
+}
