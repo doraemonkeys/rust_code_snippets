@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 sayhello_lib = { path = "E:/Doraemon/IT/Rust/study/sayhello_lib" }
+thiserror = "1.0"
+anyhow = "1.0"

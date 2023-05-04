@@ -1,42 +1,11 @@
-use std::thread::{self, JoinHandle};
+use libc::size_t;
 
-static mut DATA: u64 = 0;
-static mut READY: bool = false;
-
-fn reset() {
-    unsafe {
-        DATA = 0;
-        READY = false;
-    }
-}
-
-fn producer() -> JoinHandle<()> {
-    thread::spawn(move || {
-        unsafe {
-            DATA = 100; // A
-            READY = true; // B
-        }
-    })
-}
-
-fn consumer() -> JoinHandle<()> {
-    thread::spawn(move || {
-        unsafe {
-            while !READY {} // C
-
-            assert_eq!(100, DATA); // D
-        }
-    })
+#[link(name = "snappy")]
+extern "C" {
+    fn snappy_max_compressed_length(source_length: size_t) -> size_t;
 }
 
 fn main() {
-    loop {
-        reset();
-
-        let t_producer = producer();
-        let t_consumer = consumer();
-
-        t_producer.join().unwrap();
-        t_consumer.join().unwrap();
-    }
+    let x = unsafe { snappy_max_compressed_length(100) };
+    println!("max compressed length of a 100 byte buffer: {}", x);
 }

@@ -5,6 +5,15 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# [lib]
+# #name为编译生成之后的lib库的名字，生成libsay_hello.a(或libsay_hello.lib)静态库和其他一些编译之后东西
+# name = "say_hello"
+# # 指定rustc编译成什么库类型，这里指定为静态库类型。
+# crate-type = ["staticlib"]
+
+# [dependencies]
+# libc = "0.2"
+
 [lib]
 crate-type = ["cdylib"]
 [dependencies]

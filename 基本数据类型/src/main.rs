@@ -1,12 +1,11 @@
-// 在其它语言中，我们用 `var a = "hello world"` 的方式给 `a` 赋值，
-// 也就是把等式右边的 `"hello world"` 字符串赋值给变量 `a` ，
-// 而在 Rust 中，我们这样写： `let a = "hello world"` ，同时给这个过程起了另一个名字：变量绑定。
-
-// 为何不用赋值而用绑定呢（其实你也可以称之为赋值，但是绑定的含义更清晰准确）？
-// 这里就涉及 Rust 最核心的原则——所有权。
-
-// cargo run
 fn main() {
+    // 在其它语言中，我们用 `var a = "hello world"` 的方式给 `a` 赋值，
+    // 也就是把等式右边的 `"hello world"` 字符串赋值给变量 `a` ，
+    // 而在 Rust 中，我们这样写： `let a = "hello world"` ，同时给这个过程起了另一个名字：变量绑定。
+
+    // 为何不用赋值而用绑定呢（其实你也可以称之为赋值，但是绑定的含义更清晰准确）？
+    // 这里就涉及 Rust 最核心的原则——所有权。
+
     // 变量
     study_variable_binding();
     // Rust 的数值上可以使用方法
@@ -24,21 +23,31 @@ fn main() {
 
 fn study_global_variable() {
     println!("-----------------全局变量-----------------");
-    // 静态变量
-    const _MAX_ID: usize = usize::MAX / 2; // 常量，顾名思义它是不可变的，很适合用作静态配置
+    // 全局变量的生命周期肯定是`'static`，但是不代表它需要用`static`来声明，
+    // 例如常量、字符串字面值等无需使用`static`进行声明，原因是它们已经被打包到二进制可执行文件中。
+
+    // 静态常量
+    println!("-----------------静态常量-----------------");
+    // 常量可以在任意作用域进行定义，其生命周期贯穿整个程序的生命周期。编译时编译器会尽可能将其内联到代码中，
+    // 所以在不同地方对同一常量的引用并不能保证引用到相同的内存地址。
+    const MAX_ID: usize = usize::MAX / 2; // 适合用作静态配置
+    println!("用户ID允许的最大值是{}", MAX_ID);
 
     // 静态变量
+    println!("-----------------静态变量-----------------");
     static mut REQUEST_RECV: usize = 0;
     // 静态变量不会被内联，在整个程序中，静态变量只有一个实例，所有的引用都会指向同一个地址；
     // 存储在静态变量中的值必须要实现 Sync trait
 
     // 原子类型
+    println!("-----------------原子类型-----------------");
     // 想要全局计数器、状态控制等功能，又想要线程安全的实现，原子类型是非常好的办法。
     use std::sync::atomic::{AtomicUsize, Ordering};
-    static REQUEST_RECV_1: AtomicUsize = AtomicUsize::new(0);
+    static REQUEST_RECV_ATOMIC: AtomicUsize = AtomicUsize::new(0);
 
-    //之前的静态变量都是在编译器初始化的，因此无法使用函数调用进行赋值，
-    // 而lazy_static允许我们在运行期初始化静态变量！
+    // lazy_static是社区提供的非常强大的宏，用于懒初始化静态变量，之前的静态变量都是在编译期初始化的，
+    // 因此无法使用函数调用进行赋值，而 lazy_static 允许我们在运行期初始化静态变量！
+    println!("-----------------lazy_static-----------------");
     use lazy_static::lazy_static;
     use std::sync::Mutex;
 
@@ -47,51 +56,87 @@ fn study_global_variable() {
     // static NAMES1: Mutex<String> = Mutex::new(String::from("Sunface, Jack, Allen"));
 
     lazy_static! {
+        // lazy_static 宏，匹配的是 static ref ，所以定义的静态变量都是不可变引用。
+        // lazy_static 定义后直到使用该变量，才进行初始化，非常 lazy static 。
         static ref NAMES: Mutex<String> = Mutex::new(String::from("Sunface, Jack, Allen"));
     }
 
+    // Box::leak
+    println!("-----------------Box::leak-----------------");
+    // 我们提到了Box::leak可以用于全局变量，例如用作运行期初始化的全局动态配置，
+    // 先来看看如果不使用lazy_static也不使用Box::leak，会发生什么：
     #[derive(Debug)]
     struct Config {
-        a: String,
-        b: String,
+        _a: String,
+        _b: String,
     }
     static mut CONFIG: Option<&mut Config> = None;
-    // Box::leak
-    // 我们提到了Box::leak可以用于全局变量，例如用作运行期初始化的全局动态配置，先来看看如果不使用lazy_static也不使用Box::leak，会发生什么：
     fn test_no_lazy() {
         let c = Box::new(Config {
-            a: "A".to_string(),
-            b: "B".to_string(),
+            _a: "A".to_string(),
+            _b: "B".to_string(),
         });
 
         unsafe {
-            // 报错，Rust 的借用和生命周期规则限制了我们做到这一点，因为试图将一个局部生命周期的变量赋值给全局生命周期的CONFIG，这明显是不安全的。
+            // 报错，Rust 的借用和生命周期规则限制了我们做到这一点，
+            // 因为试图将一个局部生命周期的变量赋值给全局生命周期的CONFIG，这明显是不安全的。
             // CONFIG = Some(&mut Config {
             //     a: "A".to_string(),
             //     b: "B".to_string(),
             // });
 
+            // 好在`Rust`为我们提供了`Box::leak`方法，它可以将一个变量从内存中泄漏(听上去怪怪的，竟然做主动内存泄漏)，
+            // 然后将其变为`'static`生命周期，最终该变量将和程序活得一样久，因此可以赋值给全局静态变量`CONFIG`。
             // 将`c`从内存中泄漏，变成`'static`生命周期
             CONFIG = Some(Box::leak(c));
             println!("{:?}", CONFIG);
         }
     }
+    test_no_lazy();
     unsafe {
         REQUEST_RECV += 1;
-        // Rust 要求必须使用unsafe语句块才能访问和修改static变量，因为这种使用方式往往并不安全，其实编
-        //译器是对的，当在多线程中同时去修改时，会不可避免的遇到脏数据
+        // Rust 要求必须使用unsafe语句块才能访问和修改static变量，因为这种使用方式往往并不安全，
+        // 其实编译器是对的，当在多线程中同时去修改时，会不可避免的遇到脏数据
         assert_eq!(REQUEST_RECV, 1);
     }
 
     for _ in 0..100 {
-        REQUEST_RECV_1.fetch_add(1, Ordering::Relaxed);
+        REQUEST_RECV_ATOMIC.fetch_add(1, Ordering::Relaxed);
     }
-    println!("当前用户请求数{:?}", REQUEST_RECV_1);
+    println!("当前用户请求数{:?}", REQUEST_RECV_ATOMIC);
 
     //lazy_static直到运行到main中的第一行代码时，才进行初始化，非常lazy static
     let mut v = NAMES.lock().unwrap();
-    v.push_str(", Myth");
+    v.push_str(", Tom");
     println!("{}", v);
+
+    // 从函数中返回全局变量
+    println!("-----------------从函数中返回全局变量-----------------");
+    fn init() -> Option<&'static mut Config> {
+        let c = Box::new(Config {
+            _a: "A".to_string(),
+            _b: "B".to_string(),
+        });
+
+        Some(Box::leak(c)) // 将`c`从内存中泄漏，变成`'static`生命周期
+    }
+    unsafe {
+        CONFIG = init();
+        println!("{:?}", CONFIG)
+    }
+
+    // 标准库中的 OnceCell
+    println!("-----------------OnceCell-----------------");
+    // 在 Rust 标准库中提供 lazy::OnceCell 和 lazy::SyncOnceCell 两种 Cell，
+    // 前者用于单线程，后者用于多线程，它们用来存储堆上的信息，并且具有最多只能赋值一次的特性。
+    // 如实现一个多线程的日志组件 Logger：
+    example_logger();
+}
+
+fn example_logger() {
+    println!("-----------------example_logger-----------------");
+    // #![feature(once_cell)]
+    // 目前 `OnceCell` 和 `SyncOnceCell` API 暂未稳定，需启用特性 `#![feature(once_cell)]`。
 }
 
 fn study_type_conversion() {

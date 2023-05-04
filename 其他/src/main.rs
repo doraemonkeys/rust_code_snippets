@@ -1,7 +1,11 @@
+mod error_handle;
 mod format;
 fn main() {
     // 错误处理
     study_error_handling();
+
+    // 错误处理2
+    error_handle::study_error_handling2();
 
     // 格式化输出
     format::study_format_output();
