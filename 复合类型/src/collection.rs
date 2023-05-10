@@ -118,6 +118,8 @@ fn change_value(v: Vec<i32>) {
 
 fn study_vector() {
     println!("-----------------动态数组-----------------");
+    // 数组是静态分配的，长度不可变，在栈上分配，拥有Copy trait。
+    // 而动态数组 Vec 是在堆上分配的，长度可变。
     let mut v: Vec<i32> = Vec::new();
     println!("v = {:?}", v);
     v.push(1);
@@ -145,6 +147,14 @@ fn study_vector() {
     v[0] = 3;
     println!("v[0] = {}", v[0]);
 
+    // 从数组创建 Vector
+    let a = [11, 22, 33, 44, 55];
+    let v = a.to_vec(); // copy
+    println!("v = {:?}", v);
+
+    let v = Vec::from(a); // move
+    println!("v = {:?}", v);
+
     // 使用宏 vec! 来创建数组
     let v = vec![1, 2, 3, 4, 5];
     println!("v = {:?}", v);
@@ -154,6 +164,7 @@ fn study_vector() {
     // 目前来看，这种解决方案简单直白，但是当 `Vector` 中的元素被引用后，事情可能会没那么简单。
 
     // 从 Vector 中删除元素
+    println!("-----------------从 Vector 中删除元素-----------------");
     let mut v = vec![1, 2, 3, 4, 5];
     println!("v = {:?}", v);
     let third: &i32 = &v[2];
@@ -161,19 +172,36 @@ fn study_vector() {
     // 通过索引删除元素
     v.remove(2); // [1, 2, 4, 5]
     println!("v = {:?}", v);
-    println!("v.len() = {}", v.len());
-    println!("v.capacity() = {}", v.capacity());
+    println!("v.len() = {}", v.len()); // 4
+    println!("v.capacity() = {}", v.capacity()); // 5
+
     // 通过 pop 方法删除元素
     let last = v.pop();
     println!("v = {:?}", v);
     println!("last = {:?}", last);
-    println!("v.len() = {}", v.len());
-    println!("v.capacity() = {}", v.capacity());
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
+
     // 通过 clear 方法清空 Vector (不会释放内存)
     v.clear();
     println!("v = {:?}", v);
     println!("v.len() = {}", v.len());
     println!("v.capacity() = {}", v.capacity());
+    // 通过 drain 方法删除元素
+    let mut v = vec![1, 2, 3, 4, 5];
+    // 去除前2个元素 erase
+    v.drain(0..2);
+    println!("v: {:?}", v); // v: [3, 4, 5]
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
+
+    // 通过 retain 方法删除元素
+    let mut v = vec![1, 2, 3, 4, 5];
+    // 保留所有奇数
+    v.retain(|x| x % 2 == 1);
+    println!("v: {:?}", v); // v: [1, 3, 5]
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
 
     let v = vec![1, 2, 3, 4, 5];
 

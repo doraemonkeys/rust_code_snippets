@@ -366,7 +366,7 @@ fn study_map_or_map_or_else() {
 
 fn study_map_map_err() {
     println!("----------------- map() 和 map_err() -----------------");
-    // `map` 可以将 `Some` 或 `Ok` 中的值映射为另一个：
+    // `map` 可以将 `Some<T1>` 或 `Ok` 中的值映射为另一个：Some<T1> map = Some<T2>
     // 而 `map_err` 则可以将 `Err` 中的值映射为另一个：
     let s1 = Some("abcde");
     let s2 = Some(5);
@@ -467,6 +467,7 @@ fn study_or_else_and_then() {
     let e2: Result<&str, &str> = Err("error2");
     let fn_err = |_| Err("error2");
 
+    // 如果o1 是 `Ok`，则 `and_then` 会调用 `fn_ok`，并返回 `fn_ok` 的返回值。
     assert_eq!(o1.and_then(fn_ok), o2); // Ok1 and_then Ok2 = Ok2
     assert_eq!(o1.and_then(fn_err), e2); // Ok and_then Err = Err
     assert_eq!(e1.and_then(fn_ok), e1); // Err and_then Ok = Err

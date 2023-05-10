@@ -7,6 +7,8 @@ fn main() {
     Invalid,data
     ";
     println!("{}", penguin_data);
+    assert!(penguin_data.lines().count() == 6);
+    assert!(penguin_data[..1].lines().count() == 1);
 
     // lines() 方法返回一个迭代器，每次迭代返回一行
     let records = penguin_data.lines();

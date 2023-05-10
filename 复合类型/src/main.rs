@@ -157,6 +157,53 @@ fn study_string() {
     say_hello(&s);
     say_hello(&s[..]);
     say_hello(s.as_str());
+
+    // [u8] -> String
+    println!("-----------------[u8] -> String-----------------");
+    // 1. 使用 from_utf8() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = String::from_utf8(bytes.to_vec()).unwrap();
+    println!("{}", s);
+    // 2. 使用 from_utf8_lossy() 函数
+    let bytes = [104u8, 101, 108, 108, 111, 226, 128, 141];
+    let s = String::from_utf8_lossy(&bytes); // 会将无效的字节序列替换为 U+FFFD REPLACEMENT CHARACTER
+    println!("{}", s);
+    // 3. 使用 from_raw_parts() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = unsafe { String::from_utf8_unchecked(bytes.to_vec()) };
+    println!("{}", s);
+
+    // String -> [u8]
+    println!("-----------------String -> [u8]-----------------");
+    // 1. 使用 as_bytes() 方法
+    let s = String::from("hello");
+    let bytes = s.as_bytes();
+    println!("{:?}", bytes);
+    // 2. 使用 into_bytes() 方法
+    let s = String::from("hello");
+    let bytes = s.into_bytes();
+    println!("{:?}", bytes);
+    // 3. 使用 as_ptr() 方法
+    let s = String::from("hello");
+    let ptr = s.as_ptr();
+    let bytes = unsafe { std::slice::from_raw_parts(ptr, s.len()) };
+    println!("{:?}", bytes);
+
+    // [u8] -> &str
+    println!("-----------------[u8] -> &str-----------------");
+    // 1. 使用 from_utf8() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = std::str::from_utf8(&bytes).unwrap();
+    println!("{}", s);
+    // 2. 使用 from_utf8_unchecked() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = unsafe { std::str::from_utf8_unchecked(&bytes) };
+    println!("{}", s);
+    // 3. 使用 from_raw_parts() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let ptr = bytes.as_ptr();
+    let s = unsafe { std::str::from_utf8_unchecked(std::slice::from_raw_parts(ptr, bytes.len())) };
+    println!("{}", s);
 }
 
 fn say_hello(s: &str) {
@@ -198,6 +245,16 @@ fn study_slice() {
     // 参数是对自身的可变借用 ）
     // s.clear(); // error!
     println!("\"{}\" the first word is: {}", s, word);
+
+    // 取出字符串切片的第一个字符
+    // 注意只有数组或数组切片才能使用索引，它们实现了 SliceIndex<[T]> trait。
+    assert!(word == "h");
+    assert!(word.as_bytes().get(0).unwrap() == &b'h');
+    assert!(word.as_bytes()[0] == b'h');
+    let byte = s.as_bytes()[0];
+    assert!(byte == b'h');
+    assert!(word.bytes().nth(0).unwrap() == b'h');
+    assert!(word.chars().nth(0).unwrap() == 'h');
 
     // 切片是对集合的部分引用，因此不仅仅字符串有切片，其它集合类型也有，例如数组。
     let a = [1, 2, 3, 4, 5];

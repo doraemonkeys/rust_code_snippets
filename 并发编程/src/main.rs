@@ -519,7 +519,7 @@ fn study_multi_sender_single_receiver() {
     use std::thread;
     // 创建一个消息通道, 返回一个元组：(发送者，接收者)
     // `tx`,`rx`对应发送者和接收者，它们的类型由编译器自动推导。
-    let (tx, rx) = mpsc::channel();
+    let (tx, rx) = mpsc::channel(); //tx means transmitter, rx means receiver
     let mut handles = vec![];
 
     // 创建线程，并发送消息
@@ -549,11 +549,11 @@ fn study_multi_sender_single_receiver() {
     println!("receive {}", rx.recv().unwrap());
     // returning an error if the corresponding channel has hung up.
     // 没有消息时，recv方法会阻塞当前线程，直到接收到消息
-    // println!("receive {}", rx.recv().unwrap());
+    println!("receive err {:?}", rx.recv());
 
     // 除了上述`recv`方法，还可以使用`try_recv`尝试接收一次消息，
     // 该方法并不会阻塞线程，当通道中没有消息时，它会立刻返回一个错误。
-    println!("receive {:?}", rx.try_recv()); // receive Err(Disconnected)
+    println!("receive err {:?}", rx.try_recv()); // receive Err(Disconnected)
 
     // 使用通道来传输数据，一样要遵循 Rust 的所有权规则：
     // - 若值的类型实现了`Copy`特征，则直接复制一份该值，然后传输过去，例如之前的`i32`类型

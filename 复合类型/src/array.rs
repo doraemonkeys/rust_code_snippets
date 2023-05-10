@@ -55,6 +55,25 @@ pub fn study_array() {
     println!("slice = {:?}", slice);
     assert_eq!(slice, &[1, 2, 3, 4, 5]);
 
+    // 从字符串字面量创建切片
+    println!("-----------------从字符串字面量创建切片-----------------");
+    let a: &[u8] = b"hello"; //b means byte
+    println!("a = {:?}", a);
+    assert_eq!(a, &[b'h', b'e', b'l', b'l', b'o']);
+
+    // 从vector创建数组切片
+    println!("-----------------从vector创建切片-----------------");
+    let v = vec![111, 222, 333, 444, 555];
+    let slice = &v[1..3];
+    println!("slice = {:?}", slice);
+    assert_eq!(slice, &[222, 333]);
+
+    // 从 Vector 创建数组切片
+    let v = vec![111, 222, 333, 444, 555];
+    let slice = v.as_slice();
+    println!("slice = {:?}", slice);
+    assert_eq!(slice, &[111, 222, 333, 444, 555]);
+
     // 切片可以是对数组的可变引用
     println!("-----------------切片可以是对数组的可变引用-----------------");
     let mut b: [i32; 5] = [1, 2, 3, 4, 5];

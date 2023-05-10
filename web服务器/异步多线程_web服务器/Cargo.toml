@@ -1,0 +1,12 @@
+[package]
+name = "异步多线程_web服务器"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = "0.3.28"
+[dependencies.async-std]
+version = "1.6"
+features = ["attributes"]
