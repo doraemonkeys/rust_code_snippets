@@ -204,6 +204,26 @@ fn study_string() {
     let ptr = bytes.as_ptr();
     let s = unsafe { std::str::from_utf8_unchecked(std::slice::from_raw_parts(ptr, bytes.len())) };
     println!("{}", s);
+
+    // &str -> [u8]
+    println!("-----------------&str -> [u8]-----------------");
+    // 1. 使用 as_bytes() 方法
+    let s = "hello";
+    let bytes = s.as_bytes();
+    println!("{:?}", bytes);
+    // 2. 使用 as_ptr() 方法
+    let s = "hello";
+    let ptr = s.as_ptr();
+    let bytes = unsafe { std::slice::from_raw_parts(ptr, s.len()) };
+    println!("{:?}", bytes);
+    // 3. 使用 to_owned() 方法
+    let s = "hello";
+    let bytes = s.to_owned().into_bytes();
+    println!("{:?}", bytes);
+    // 4. 使用 to_string() 方法
+    let s = "hello";
+    let bytes = s.to_string().into_bytes();
+    println!("{:?}", bytes);
 }
 
 fn say_hello(s: &str) {

@@ -203,6 +203,44 @@ fn study_vector() {
     println!("v.len() = {}", v.len()); // 3
     println!("v.capacity() = {}", v.capacity()); // 5
 
+    //resize(不会释放内存)
+    let mut v = vec![1, 2, 3, 4, 5];
+    v.resize(3, 0);
+    println!("v: {:?}", v); // v: [1, 2, 3]
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
+
+    // truncate(不会释放内存)
+    let mut v = vec![1, 2, 3, 4, 5];
+    v.truncate(3);
+    println!("v: {:?}", v); // v: [1, 2, 3]
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
+
+    // resize_with(不会释放内存)
+    let mut v = vec![1, 2, 3, 4, 5];
+    // If new_len is greater than len, the Vec is extended by the difference
+    v.resize_with(10, Default::default);
+    println!("v: {:?}", v); // v: [1, 2, 3, 4, 5, 0, 0, 0, 0, 0]
+    println!("v.len() = {}", v.len()); // 10
+    println!("v.capacity() = {}", v.capacity()); // 10
+
+    // resize_with(不会释放内存)
+    let mut v = vec![1, 2, 3, 4, 5];
+    v.resize_with(3, Default::default);
+    println!("v: {:?}", v); // v: [1, 2, 3]
+    println!("v.len() = {}", v.len()); // 3
+    println!("v.capacity() = {}", v.capacity()); // 5
+
+    // 释放内存shrink_to_fit
+    let mut v = vec![1, 2, 3, 4, 5];
+    v.truncate(2);
+    v.shrink_to_fit();
+    println!("v: {:?}", v); // v: [1, 2]
+    println!("v.len() = {}", v.len()); // 2
+    println!("v.capacity() = {}", v.capacity()); // >= 2
+    assert!(v.capacity() >= 2);
+
     let v = vec![1, 2, 3, 4, 5];
 
     // 从 Vector 中读取元素
