@@ -1,0 +1,36 @@
+[package]
+name = "my-redis"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# Tokio 有很多功能和特性，例如 TCP，UDP，Unix sockets，同步工具，多调度类型等等，
+# 不是每个应用都需要所有的这些特性。为了优化编译时间和最终生成可执行文件大小、内存占用大小，
+# 应用可以对这些特性进行可选引入。
+# 而这里为了演示的方便，我们使用 full ，表示直接引入所有的特性。
+tokio = { version = "1", features = ["full"] }
+mini-redis = "0.4"
+
+
+
+# 示例对象的文件在根目录下的 examples 目录中。既然是示例，自然是使用项目中的库对象的功能进行演示。
+# 示例对象编译后的文件会存储在 target/debug/examples 目录下。
+# 如上所示，示例对象可以使用库对象的公共 API，也可以通过 [dependencies] 来引入外部的依赖库。
+
+# 默认情况下，示例对象都是可执行的二进制文件( 带有 fn main() 函数入口)，
+# 毕竟例子是用来测试和演示我们的库对象，是用来运行的。而你完全可以将示例对象改成库的类型:
+# [[example]]
+# name = "foo"
+# crate-type = ["staticlib"]
+# 如果想要指定运行某个示例对象，可以使用 cargo run --example <example-name> 命令。
+# 如果是库类型的示例对象，则可以使用 cargo build --example <example-name> 进行构建。
+# 与此类似，还可以使用 cargo install --example <example-name> 来将
+# 示例对象编译出的可执行文件安装到默认的目录中，将该目录添加到 $PATH 环境变量中，
+# 就可以直接全局运行安装的可执行文件。
+
+# 最后，cargo test 命令默认会对示例对象进行编译，以防止示例代码因为长久没运行，导致严重过期以至于无法运行。
+[[example]]
+name = "hello-redis"
+path = "examples/hello-redis.rs"
