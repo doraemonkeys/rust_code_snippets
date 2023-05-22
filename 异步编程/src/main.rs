@@ -1184,20 +1184,24 @@ fn example_study_async_2() {
     impl Executor {
         fn run(&self) {
             while let Ok(task) = self.ready_queue.recv() {
+                println!("执行器接收到任务");
                 // 获取一个future，若它还没有完成(仍然是Some，不是None)，则对它进行一次poll并尝试完成它
                 let mut future_slot = task.future.lock().unwrap();
                 if let Some(mut future) = future_slot.take() {
                     // 基于任务自身创建一个 `LocalWaker`
                     let waker = waker_ref(&task);
                     let context = &mut Context::from_waker(&*waker);
-                    // `BoxFuture<T>`是`Pin<Box<dyn Future<Output = T> + Send + 'static>>`的类型别名
-                    // 通过调用`as_mut`方法，可以将上面的类型转换成`Pin<&mut dyn Future + Send + 'static>`
+                    //  BoxFuture<T> 是 Pin<Box<dyn Future<Output = T> + Send + 'static>> 的类型别名
+                    // 通过调用 as_mut 方法，可以将上面的类型转换成 Pin<&mut dyn Future + Send + 'static>
                     if future.as_mut().poll(context).is_pending() {
                         // Future还没执行完，因此将它放回任务中，等待下次被poll
+                        // (任务会被放回任务通道中，ArcWake 的 wake_by_ref 方法会被调用)
+                        println!("任务还未完成，等待任务调用wake唤醒");
                         *future_slot = Some(future);
                     }
                 }
             }
+            println!("执行器退出");
         }
     }
 
@@ -1232,6 +1236,12 @@ fn example_study_async_2() {
     // 最开始，执行器会先 poll 一次 Future ，后面就不会主动去 poll 了，
     // 而是等待 Future 通过调用 wake 函数来通知它可以继续，
     // 它才会继续去 poll 。这种 wake 通知然后 poll 的方式会不断重复，直到 Future 完成。
+
+    // - 在 Rust 中，async 是惰性的，直到执行器 poll 它们时，才会开始执行
+    // - Waker 是 Future 被执行的关键，它可以链接起 Future 任务和执行器
+    // - 当资源没有准备时，会返回一个 Poll::Pending
+    // - 当资源准备好时，会通过 waker.wake 发出通知
+    // - 执行器会收到通知，然后调度该任务继续执行，此时由于资源已经准备好，因此任务可以顺利往前推进了
 }
 
 fn study_async_and_await() {

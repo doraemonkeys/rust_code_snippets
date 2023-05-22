@@ -324,6 +324,8 @@ fn study_multi_sender_multi_receiver() {
     // - bounded: 有界通道，可以指定通道的缓冲区大小，当缓冲区满时，发送者会阻塞
     // - array: 固定大小的通道，可以指定通道的缓冲区大小，当缓冲区满时，发送者会阻塞
     // 通道的发送和接收操作都是非阻塞的，如果通道已满或者为空，发送者和接收者都会立刻返回一个错误。
+    // std::sync::mpsc 和 crossbeam::channel， 这些通道在等待消息时会阻塞当前的线程，
+    // 因此不适用于 async 编程，只适合在多线程中使用。
 
     use crossbeam_channel::{bounded, unbounded};
     // Create a channel of unbounded capacity.

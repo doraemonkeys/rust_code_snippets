@@ -7,6 +7,20 @@ pub fn study_rust_type() {
 
     // Sized 和不定长类型 DST
     study_sized_and_dst();
+
+    // Any
+    study_any();
+}
+
+fn study_any() {
+    println!("--------------------Any--------------------");
+    // This module implements the Any trait, which enables dynamic typing
+    // of any 'static type through runtime reflection
+    // Any Trait，它允许 'static 类型通过运行时反射，实现动态类型。
+    // 所谓 Runtime Reflection，就是在运行的时候，可以判断和操作一个对象、变量等的信息，
+    // 不需要在编译期知道对象的信息。
+
+    // TODO: 未完待续
 }
 
 fn study_sized_and_dst() {
@@ -28,6 +42,7 @@ fn study_sized_and_dst() {
     // - 特征对象(列如 Box<dyn Trait>、&dyn Trait)，只能通过引用或 `Box` 的方式来使用特征对象，直接使用将报错！
     //   函数能直接传递特征对象，是因为编译期做了类型推导，本质上是泛型的语法糖，
     //   而如果要返回多种不同类型的特征对象，就需要使用 `Box<dyn Trait>`或 引用。
+    //   trait不是类型，dyn trait是?sized类型，只能用指针(引用)间接使用它。
     // - 切片(列如 str、[i32] , 其实str、[i32]是切片，&str、&[i32]是切片的引用，
     //   由于切片在编译时不能确定大小导致报错，所以一般使用切片的引用)
     // error
@@ -60,9 +75,10 @@ fn study_sized_and_dst() {
     print_size(&bb); // 输出 "Size of type T: 8"
     print_size(bb); // 输出 "Size of type T: 1"
 
-    let x: Box<dyn core::any::Any> = Box::new(42);
+    let x: Box<dyn std::any::Any> = Box::new(42);
     print_size(&x);
-    // Any 不具有固定大小，需要使用 ?Sized 约束来表示它可以是具有固定大小的类型，也可以是不具有固定大小的类型。
+    // Any 不具有固定大小(模拟动态类型的特征，必须具有static生命周期)，
+    // 需要使用 ?Sized 约束来表示它可以是具有固定大小的类型，也可以是不具有固定大小的类型。
     // 没有?Sized约束的话，下面这行代码会报错。
     print_size(&*x); // 先解Box引用再取地址
 

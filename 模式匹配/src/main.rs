@@ -226,6 +226,7 @@ fn study_option() {
     println!("five is {:?}, six is {:?}, none is {:?}", five, six, none);
 }
 
+#[derive(Debug)]
 enum Direction {
     _East,
     _West,
@@ -291,6 +292,7 @@ enum Coin2 {
 fn study_match() {
     println!("---------------------match 匹配---------------------");
     let dire = Direction::South;
+    // 穷尽匹配
     // match 的每一个分支都必须是一个表达式，且所有分支的表达式最终返回值的类型必须相同.
     // match 的匹配分支必须是完备的，也就是说必须覆盖所有的情况，否则编译器会报错。
     match dire {
@@ -301,6 +303,13 @@ fn study_match() {
         }
         // default
         _ => println!("West"),
+    };
+
+    // 除了下划线 _ ，用一个变量来承载其他情况也是可以的。
+    let dire = Direction::South;
+    match dire {
+        Direction::_East => println!("East"),
+        other => println!("other direction: {:?}", other),
     };
 
     let penny_coin = Coin::Penny;
