@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::io::Write;
+use std::io::Write; //io::stdout().flush() 是Write trait的一个方法，所以需要导入
 fn main() {
     println!("猜数游戏！！！");
     let secret_number = rand::thread_rng().gen_range(1..=100);
