@@ -61,6 +61,29 @@ fn study_global_variable() {
         static ref NAMES: Mutex<String> = Mutex::new(String::from("Sunface, Jack, Allen"));
     }
 
+    // OnceLock
+    println!("-----------------OnceLock-----------------");
+    // OnceCell 和它的线程安全对应类型 OnceLock两个新的类型在1.70稳定下来，用于共享数据的一次性初始化。
+
+    use std::sync::OnceLock;
+    static DATA: OnceLock<&str> = OnceLock::new();
+
+    fn init_example() {
+        let winner = std::thread::scope(|s| {
+            s.spawn(|| DATA.set("thread"));
+
+            std::thread::yield_now(); // give them a chance...
+
+            // Many threads may call get_or_init concurrently with different
+            // initializing functions, but it is guaranteed that only one function will be executed.
+            DATA.get_or_init(|| "main")
+        });
+
+        println!("{winner} wins!");
+    }
+
+    init_example();
+
     // Box::leak
     println!("-----------------Box::leak-----------------");
     // 我们提到了Box::leak可以用于全局变量，例如用作运行期初始化的全局动态配置，

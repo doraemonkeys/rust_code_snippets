@@ -25,6 +25,76 @@ fn main() {
 
     // 线程之间的通信
     study_thread_communication();
+
+    // scoped thread
+    study_scoped_thread();
+}
+
+fn study_scoped_thread() {
+    println!("---------------------------scoped thread---------------------------");
+    // std::thread::spawn，只接受满足'static 约束的闭包，也就意味着不可以捕获局部变量的借用。
+    // 这样看起来 Sync 约束就看起来稍许鸡肋——如果只有&'static T 能在线程间传递，那
+    // 只需要给所有&'static T 实现Send 不就好了，何必再加个Sync 呢。
+    // 后来才意识到，哦，原来做好了线程同步（当然这个是很难保证的），
+    // 是可以安全地通过借用访问跨线程的局部变量的。至少Sync 在非'static 的情况下也是有意义的。
+    // 当然，这句话还有个误区：
+    // 那只需要给所有 &'static T 实现Send 不就好了
+    // 我们其实是可以通过内部可变，拿到一个&T 就可以修改T了。
+    // 如果没有线程同步机制，直接让&T 在线程间共享，也会立刻GG。
+    // 这就是为啥RefCell 不满足Sync ，而Mutex 满足的原因了。
+    // 另外还有一些类型满足Sync 而不满足Send 的，常见于各种guard类型。
+    // 比如说MutexGuard，代表一个锁。而锁在系统层面，跨线程释放是一种ub。
+    // 如果MutexGuard 满足Send ，被“安全地”传到了另外一个线程上，然后释放，GG；
+    // 但锁里面的东西，确实可以通过借用在各个线程中共享
+    //只要里面里面的东西肯被共享就行——这一点老版本std没有考虑到，也GG了
+
+    // 总之Send 和Sync 这两个trait在rust并发编程中是缺一不可的。
+    // 但在并发编程中，仅有这两个trait，也是远远不够的。比如，如何描述线程的“父子”关系呢——来点scoped thread。
+
+    // std::thread::scope
+    // - 可以捕获scope以外的变量；
+    // - scope会阻塞地等待所有子线程结束才返回；
+    // - 子线程panic会向父线程传递
+
+    // std::thread::scope 为线程创建作用域。
+    // 传递给作用域的函数会被提供一个作用域对象，通过这个对象可以生成有作用域的线程。
+    // 与无作用域的线程不同，有作用域的线程可以借用非 'static 数据，
+    // 因为作用域保证所有线程都将在作用域的末尾被join。
+    // 在这个函数返回之前，在作用域中生成的所有尚未被手动连接的线程都会被自动join。
+    fn _test1() {
+        let x = 1i32;
+        std::thread::scope(|s| {
+            s.spawn(|| {
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                println!("local x = {}", &x);
+            });
+        });
+    }
+
+    use std::thread;
+
+    let mut a = vec![1, 2, 3];
+    let mut x = 0;
+
+    thread::scope(|s| {
+        s.spawn(|| {
+            println!("hello from the first scoped thread");
+            // We can borrow `a` here.
+            dbg!(&a);
+        });
+        s.spawn(|| {
+            println!("hello from the second scoped thread");
+            // We can even mutably borrow `x` here,
+            // because no other threads are using it.
+            x = a[0] + a[2];
+        });
+        // 执行顺序不确定
+        println!("hello from the main thread");
+    });
+
+    // After the scope, we can modify and access our variables again:
+    a.push(4);
+    assert_eq!(x, a.len());
 }
 
 fn study_send_sync() {
