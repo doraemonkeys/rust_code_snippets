@@ -629,7 +629,7 @@ fn study_box() {
     fn _box_example() {
         let _v = Box::new([255u8; 512 * 2 * 1024 * 512]);
     }
-    // 上面的例子中，数组会先在栈中创建，再传递给Box复制到堆中，但是AA占用内存太大，会报栈溢出的错误。
+    // 上面的例子中，数组会先在栈中创建，再传递给Box复制到堆中，但是占用内存太大，会报栈溢出的错误。
 
     // 为了解决这个问题，我们可以使用Box::from_raw。
     fn _box_example2() {
@@ -638,7 +638,10 @@ fn study_box() {
         let layout = Layout::new::<[u8; 512 * 2 * 1024 * 512]>();
         // 分配内存
         let ptr = unsafe { alloc(layout) };
-        let _v = unsafe { Box::from_raw(ptr as *mut [u8; 512 * 2 * 1024 * 512]) };
+        let mut v = unsafe { Box::from_raw(ptr as *mut [u8; 512 * 2 * 1024 * 512]) };
+        for i in 0..v.len() {
+            v[i] = 255;
+        }
         // 通过 Box::from_raw引用后，不用再使用 dealloc 方法手动释放内存。
     }
 
