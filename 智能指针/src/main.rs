@@ -623,6 +623,25 @@ fn study_box() {
     // 由于 arr 不再拥有底层数组的所有权，因此下面代码将报错
     // println!("{:?}", arr.len());
 
+    // from_raw
+    println!("--------------------from_raw--------------------");
+    // Box::new 将数据分配到堆上，但有一个初始化的过程。
+    fn _box_example() {
+        let _v = Box::new([255u8; 512 * 2 * 1024 * 512]);
+    }
+    // 上面的例子中，数组会先在栈中创建，再传递给Box复制到堆中，但是AA占用内存太大，会报栈溢出的错误。
+
+    // 为了解决这个问题，我们可以使用Box::from_raw。
+    fn _box_example2() {
+        use std::alloc::{alloc, Layout};
+        // 通过数据类型构建内存布局
+        let layout = Layout::new::<[u8; 512 * 2 * 1024 * 512]>();
+        // 分配内存
+        let ptr = unsafe { alloc(layout) };
+        let _v = unsafe { Box::from_raw(ptr as *mut [u8; 512 * 2 * 1024 * 512]) };
+        // 通过 Box::from_raw引用后，不用再使用 dealloc 方法手动释放内存。
+    }
+
     // 将动态大小类型变为 Sized 固定大小类型
     println!("--------------------将动态大小类型变为 Sized 固定大小类型--------------------");
     // Rust 需要在编译时知道类型占用多少空间，如果一种类型在编译时无法知道具体的大小，那么被称为动态大小类型 DST。
