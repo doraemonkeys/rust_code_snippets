@@ -1,4 +1,23 @@
 mod advance;
+
+/*
+    为什么需要生命周期，来看一个C++一个潜在的坑：
+
+    const string& foo(const string& a, const string& b) {
+        return a.empty() ? b : a;
+    }
+    int main() {
+        auto& s = foo("", "foo");
+        cout << s << '\n';
+    }
+
+    // 上面代码能正常编译和运行，但其实有很大的问题，
+    // 在函数 foo 中，返回了一个常量引用，但是该引用所绑定的变量a和b可能会被销毁，
+    // 这意味着在main函数中使用s变量时，它将引用一个已经被销毁的对象，
+    // 从而导致未定义行为（Undefined Behavior），这就是Rust中生命周期的意义。
+
+*/
+
 fn main() {
     // 生命周期
     stuidy_lifetime();
