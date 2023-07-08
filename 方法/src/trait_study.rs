@@ -66,6 +66,78 @@ pub fn study_trait() {
 
     // 父 trait
     study_super_trait();
+
+    // Eq 和 PartialEq
+    study_eq_and_partial_eq();
+}
+
+fn study_eq_and_partial_eq() {
+    println!("----------------Eq 和 PartialEq----------------");
+    // 比如，+ 号需要实现 std::ops::Add 特征，
+    // 而本文的主角 Eq 和 PartialEq 正是 == 和 != 所需的特征，
+    // 那么问题来了，这两个特征有何区别？
+
+    // 如果我们的类型只在部分情况下具有相等性，那你就只能实现 PartialEq，
+    // 否则可以实现 PartialEq 然后再默认实现 Eq。
+    enum BookFormat {
+        _Paperback,
+        _Hardback,
+        _Ebook,
+    }
+    struct Book {
+        isbn: i32,
+        _format: BookFormat,
+    }
+    impl PartialEq for Book {
+        fn eq(&self, other: &Self) -> bool {
+            self.isbn == other.isbn
+        }
+    }
+    impl Eq for Book {}
+    // 这里就只实现了 PartialEq，并没有实现 Eq，而是直接使用了默认实现 impl Eq for Book {}
+
+    // 部分相等性
+    println!("----------------部分相等性----------------");
+    // 在 HashMap 章节提到过 HashMap 的 key 要求实现 Eq 特征，也就是要能完全相等，
+    // 而浮点数由于没有实现 Eq ，因此不能用于 HashMap 的 key。
+    // 当时由于一些知识点还没有介绍，因此就没有进一步展开，
+    // 那么让我们考虑浮点数既然没有实现 Eq 为何还能进行比较呢？
+    let f1 = 3.14;
+    let f2 = 3.14;
+
+    if f1 == f2 {
+        println!("f1 == f2");
+    }
+    fn _is_eq<T: Eq>(_f: T) -> bool {
+        true
+    }
+    fn is_partial_eq<T: PartialEq>(_f: T) -> bool {
+        true
+    }
+    // _is_eq(f1); // 编译错误 the trait Eq is not implemented for {float}
+    println!("is_partial_eq(f1): {}", is_partial_eq(f1));
+
+    // 我们成功找到了一个类型实现了 PartialEq 但没有实现 Eq，那就通过它来看看何为部分相等性。
+    // 其实答案很简单，浮点数有一个特殊的值 NaN，它是无法进行相等性比较的:
+    let f1 = f32::NAN;
+    let f2 = f32::NAN;
+
+    if f1 == f2 {
+        println!("NaN 竟然可以比较，这很不数学啊！")
+    } else {
+        // 输出结果
+        println!("果然，虽然两个都是 NaN ，但是它们其实并不相等")
+    }
+
+    // 偏序集合 的两个元素x和y可以处于四个相互排斥的关联中任何一个：
+    // 要么x < y，要么x = y，要么x > y，要么x和y是“不可比较”的（前三个都不是）。
+    // 全序集合 是上面规则排除第四种可能的集合：即所有元素对都是可比较的。
+
+    // 既然浮点数有一个值不可以比较相等性，那它自然只能实现 PartialEq 而不能实现 Eq 了，
+    // 以此类推，如果我们的类型也有这种特殊要求，那也应该这么作。
+
+    // 事实上，还有一对与 `Eq/PartialEq` 非常类似的特征，它们可以用于 `<`、`<=`、`>` 和 `>=` 比较运算符。
+    // Ord 意味着一个类型的所有值都可以进行排序，而 PartialOrd 则不然。
 }
 
 fn study_super_trait() {
