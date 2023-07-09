@@ -1,6 +1,7 @@
 mod array;
 mod collection;
 mod enumeration;
+mod sort;
 mod struct1;
 mod tuple;
 fn main() {
@@ -22,6 +23,8 @@ fn main() {
     array::study_array();
     // 集合类型
     collection::study_collection();
+    // 排序
+    sort::study_sort();
 }
 
 fn study_string_escape() {
