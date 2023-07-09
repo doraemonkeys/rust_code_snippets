@@ -20,7 +20,7 @@ mod advance;
 
 fn main() {
     // 生命周期
-    stuidy_lifetime();
+    study_lifetime();
 
     // 生命周期进阶
     advance::stuidy_lifetime_advance();
@@ -48,7 +48,7 @@ fn main() {
 
  */
 
-fn stuidy_lifetime() {
+fn study_lifetime() {
     println!("-----------------函数中的生命周期-----------------");
     // 生命周期，简而言之就是引用的有效作用域。在大多数时候，我们无需手动的声明生命周期，
     // 因为编译器可以自动进行推导。
