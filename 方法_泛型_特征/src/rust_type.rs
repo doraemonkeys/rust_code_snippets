@@ -56,6 +56,12 @@ fn study_sized_and_dst() {
     // 再加上 `&str` 引用中包含有堆上数据内存地址、长度等信息，因此最终可以得出字符串切片是固定大小类型的结论。
     // 与 `&str` 类似，`String` 字符串也是固定大小的类型。
 
+    // str 类型是硬编码进可执行文件，也无法被修改，
+    // 但是 String 则是一个可增长、可改变且具有所有权的 UTF-8 编码字符串，
+    // 当 Rust 用户提到字符串时，往往指的就是 String 类型和 &str 字符串切片类型，这两个类型都是 UTF-8 编码。
+    // 除了 String 类型的字符串，Rust 的标准库还提供了其他类型的字符串，
+    // 例如 OsString， OsStr， CsString 和 CsStr 等。
+
     // 试图创建动态大小的数组, error
     // fn my_function(n: usize) {
     //     let array = [123; n];
