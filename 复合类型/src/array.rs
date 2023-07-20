@@ -84,4 +84,16 @@ pub fn study_array() {
     slice[1] = 20;
     println!("slice = {:?}", slice);
     println!("b = {:?}", b);
+
+    // &[u8] 和 &[u8; N] 的区别
+    println!("-----------------&[u8] 和 &[u8; N] 的区别-----------------");
+    // &[u8] 是切片的引用(平常所说的切片就是指切片的引用)，包含一个长度信息。
+    // &[u8; N] 是一个 u8数组 的引用，不包含长度信息。
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let _slice: &[u8] = &a[..];
+    println!("sizeof(&[u8]) = {}", std::mem::size_of::<&[u8]>()); // 16
+
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let _slice: &[u8; 5] = &a;
+    println!("sizeof(&[u8; 5]) = {}", std::mem::size_of::<&[u8; 5]>()); // 8
 }
