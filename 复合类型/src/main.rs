@@ -155,7 +155,7 @@ fn study_string() {
     let s2 = String::from(s);
     println!("{}", s2);
     // 2. String -> &str
-    // 何将 `String` 类型转为 `&str` 类型呢？答案很简单，取引用即可。
+    // 如何将 `String` 类型转为 `&str` 类型呢？答案很简单，取引用即可。
     let s = String::from("Tom");
     say_hello(&s);
     say_hello(&s[..]);

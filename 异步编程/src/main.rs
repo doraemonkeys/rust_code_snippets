@@ -726,6 +726,11 @@ fn study_pin_and_unpin() {
 
     println!("a: {}, b: {}", test1.a(), test1.b()); // a: test1, b: test1
     std::mem::swap(&mut test1, &mut test2);
+    // https://folyd.com/blog/rust-pin-unpin/
+    // 注意test1与test2这两个结构体都在栈上，只是a字段的值是在堆上的。
+    // Test结构体中的字段b是一个指向字段a的指针，字段b在栈上存的是字段a在栈上的地址。
+    // test1移动到test2的栈内存后，test1中a字段的值依旧指向原来的堆内存地址，
+    // 但是test1中b字段的值却指向了test2中a字段在栈上的地址(即指向了旧的栈内存地址)。
     // test1.b 与 test2.b 指针依然指向了旧的地址，而该地址对应的值已经被移动了，
     println!("a: {}, b: {}", test1.a(), test1.b()); // a: test2, b: test1
     println!("a: {}, b: {}", test2.a(), test2.b()); // a: test1, b: test2

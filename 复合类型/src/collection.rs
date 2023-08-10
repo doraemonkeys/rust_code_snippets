@@ -119,14 +119,14 @@ fn change_value(v: Vec<i32>) {
 fn study_vector() {
     println!("-----------------动态数组-----------------");
     // 数组是静态分配的，长度不可变，在栈上分配，拥有Copy trait。
-    // 而动态数组 Vec 是在堆上分配的，长度可变。
+    // 而动态数组 Vec 是在堆上分配的，长度可变，会发生所有权转移。
     let mut v: Vec<i32> = Vec::new();
     println!("v = {:?}", v);
     v.push(1);
     v.push(2);
     println!("v = {:?}", v);
 
-    // vector 是值传递
+    // vector 是值传递，在clone的时候会复制一份堆上的数据。
     let v = vec![1, 2, 3, 4, 5];
     change_value(v.clone());
     println!("{:?}", v);
