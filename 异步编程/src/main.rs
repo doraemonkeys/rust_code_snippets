@@ -735,6 +735,40 @@ fn study_pin_and_unpin() {
     println!("a: {}, b: {}", test1.a(), test1.b()); // a: test2, b: test1
     println!("a: {}, b: {}", test2.a(), test2.b()); // a: test1, b: test2
 
+    /*
+        #include <iostream>
+        using namespace std;
+        int main() {
+            struct foo {
+                int a;
+                int* b;
+            };
+
+            foo f;
+            f.a = 100;
+            f.b = &f.a;
+            cout << f.a << endl;
+            cout << *f.b << endl;
+
+            foo f2;
+            f2.a = 200;
+            f2.b = &f2.a;
+            cout << f2.a << endl;
+            cout << *f2.b << endl;
+
+            foo temp = f;
+            f = f2;
+            f2 = temp;
+            cout << "After swap" << endl;
+
+            cout << f.a << endl;
+            cout << *f.b << endl;
+
+            cout << f2.a << endl;
+            cout << *f2.b << endl;
+        }
+    */
+
     // 在理解了 Pin 的作用后，我们再来看看它怎么帮我们解决问题。
     example_study_pin_and_unpin();
 
