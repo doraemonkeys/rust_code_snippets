@@ -36,7 +36,29 @@ fn main() -> io::Result<()> {
     runtime.spawn(worker(2));
 
     println!("current thread: {}", thread::current().name().unwrap());
-    thread::sleep(Duration::from_secs(4444));
-    runtime.shutdown_timeout(Duration::from_secs(4));
+    let mut count = 0;
+    loop {
+        let start = Instant::now();
+        let mut num: i64 = 0;
+        loop {
+            num += rand::thread_rng().gen_range(1..=100);
+            let elapsed = start.elapsed();
+            if elapsed.as_millis() > 200 {
+                break;
+            }
+        }
+        println!("worker main: {}", num);
+        count += 1;
+        if count > 20 {
+            println!("worker main exit");
+            break;
+        }
+    }
+
+    println!("current thread: {}", thread::current().name().unwrap());
+    // thread::sleep(Duration::from_secs(4444));
+    // runtime.shutdown_timeout(Duration::from_secs(4));
+
+    println!("exit main");
     Ok(())
 }

@@ -339,6 +339,10 @@ pub trait Iterator2 {
     // 而使用了关联类型，你只需要写 `Iterator`，当类型定义复杂时，这种写法可以极大的增加可读性
 }
 
+pub trait Iterator3<T> {
+    fn next(&mut self) -> Option<T>;
+}
+
 struct Counter {
     count: u32,
 }
@@ -543,6 +547,7 @@ pub fn notify2<T: Summary>(item: &T) {
 pub fn notify(item: &impl Summary) {
     println!("Breaking news! {}", item.summarize());
 }
+
 fn returns_summarizable() -> impl Summary {
     Weibo {
         username: String::from("sunface"),

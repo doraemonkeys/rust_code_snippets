@@ -388,6 +388,7 @@ fn study_multi_sender_multi_receiver() {
     // - flume, 官方给出的性能数据某些场景要比 crossbeam 更好些
 
     // crossbeam-channel
+    // https://doraemon.xlog.app/crossbeam_channelmd
     println!("---------------------------crossbeam-channel---------------------------");
     // crossbeam-channel 是一个多生产者，多消费者通道，它提供了三种通道类型：
     // - unbounded: 无界通道，可以无限制的发送消息，直到内存耗尽
