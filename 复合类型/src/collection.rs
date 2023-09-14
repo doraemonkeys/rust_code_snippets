@@ -109,6 +109,11 @@ fn study_hash_map() {
         *count += 1;
     }
     println!("{:?}", map);
+
+    // clear不会改变HashMap的容量
+    println!("len = {}, capacity = {}", my_gems.len(), my_gems.capacity());
+    my_gems.clear();
+    println!("len = {}, capacity = {}", my_gems.len(), my_gems.capacity());
 }
 
 fn change_value(v: Vec<i32>) {
@@ -125,6 +130,30 @@ fn study_vector() {
     v.push(1);
     v.push(2);
     println!("v = {:?}", v);
+
+    // vector 之间也可以直接进行比较,长度和内容都相同才相等(不会比较容量)
+    let mut v1 = Vec::with_capacity(10);
+    for i in 1..=5 {
+        v1.push(i);
+    }
+    let v2 = vec![1, 2, 3, 4, 5];
+    if v1 == v2 {
+        println!(
+            "{:?} == {:?} ,v1 cap: {}, v2 cap: {}",
+            v1,
+            v2,
+            v1.capacity(),
+            v2.capacity()
+        );
+    } else {
+        println!(
+            "{:?} != {:?} ,v1 cap: {}, v2 cap: {}",
+            v1,
+            v2,
+            v1.capacity(),
+            v2.capacity()
+        );
+    }
 
     // vector 是值传递，在clone的时候会复制一份堆上的数据。
     let v = vec![1, 2, 3, 4, 5];

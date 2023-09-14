@@ -55,6 +55,17 @@ pub fn study_array() {
     println!("slice = {:?}", slice);
     assert_eq!(slice, &[1, 2, 3, 4, 5]);
 
+    // 数组切片可以直接和数组进行比较
+    println!("-----------------数组切片可以直接和数组进行比较-----------------");
+    let a: [i32; 5] = [1, 2, 3, 4, 5];
+    let slice: &[i32] = &[1, 2, 3, 4, 5];
+    if a == slice {
+        // 长度相同，元素相同
+        println!("{:?} == {:?}", a, slice);
+    } else {
+        println!("{:?} != {:?}", a, slice);
+    }
+
     // 从字符串字面量创建切片
     println!("-----------------从字符串字面量创建切片-----------------");
     let a: &[u8] = b"hello"; //b means byte
