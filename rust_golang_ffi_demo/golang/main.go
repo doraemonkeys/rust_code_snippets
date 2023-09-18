@@ -1,7 +1,7 @@
 package main
 
 // #cgo CFLAGS: -I./cgo
-// #cgo LDFLAGS: -L./ -lrustdemo
+// #cgo LDFLAGS: -L${SRCDIR} -lrustdemo
 // #include "rustdemo.h"
 import "C"
 import (
