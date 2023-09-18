@@ -886,6 +886,7 @@ fn study_singleton() {
 fn study_mutex() {
     println!("----------------------互斥锁----------------------");
     // Mutex<T> 可以支持修改内部数据，当结合 Arc<T> 一起使用时，可以实现多线程的内部可变性。
+    // Mutex当全局变量使用时，不需要Arc。
     use std::sync::{Arc, Mutex};
     use std::thread;
     let lock = Arc::new(Mutex::new(0));
