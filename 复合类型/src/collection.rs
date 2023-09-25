@@ -155,7 +155,7 @@ fn study_vector() {
         );
     }
 
-    // vector 是值传递，在clone的时候会复制一份堆上的数据。
+    // vector clone 相当于值传递，在clone的时候会复制一份堆上的数据(本质上是因为可变引用不能有多个)
     let v = vec![1, 2, 3, 4, 5];
     change_value(v.clone());
     println!("{:?}", v);
@@ -294,4 +294,20 @@ fn study_vector() {
         v.push(i);
         println!("len = {}, capacity = {}", v.len(), v.capacity());
     }
+
+    // vec<u8> 与 String 的相互转换
+    let v = vec![b'h', b'e', b'l', b'l', b'o'];
+    let s = String::from_utf8(v).unwrap(); // from_utf8 会检查字节数组是否是utf8编码
+    println!("s = {}", s);
+    // from_utf8_lossy，传入字节数组的引用，
+    // 会重新申请内存并把非utf8的字节替换成�,得到一个String
+    let v = vec![b'f', b'o', b'o', 0xff];
+    let s = String::from_utf8_lossy(&v);
+    println!("s = {}", s); // s = foo�
+
+    //unsafe方法 from_utf8_unchecked,传入字节数组的引用，不会检查字节数组是否是utf8编码。
+    // 如果字节数组不是utf8编码，会导致未定义行为。
+    let v = vec![b'h', b'e', b'l', b'l', b'o'];
+    let s = unsafe { String::from_utf8_unchecked(v) };
+    println!("s = {}", s);
 }
