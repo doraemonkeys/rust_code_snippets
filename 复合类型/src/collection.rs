@@ -297,7 +297,8 @@ fn study_vector() {
 
     // vec<u8> 与 String 的相互转换
     let v = vec![b'h', b'e', b'l', b'l', b'o'];
-    let s = String::from_utf8(v).unwrap(); // from_utf8 会检查字节数组是否是utf8编码
+    // from_utf8 会检查字节数组是否是utf8编码，如果不是utf8编码，会返回Err。
+    let s = String::from_utf8(v).unwrap();
     println!("s = {}", s);
     // from_utf8_lossy，传入字节数组的引用，
     // 会重新申请内存并把非utf8的字节替换成�,得到一个String
@@ -305,7 +306,7 @@ fn study_vector() {
     let s = String::from_utf8_lossy(&v);
     println!("s = {}", s); // s = foo�
 
-    //unsafe方法 from_utf8_unchecked,传入字节数组的引用，不会检查字节数组是否是utf8编码。
+    //unsafe方法 from_utf8_unchecked,传入字节数组所有权，不会检查字节数组是否是utf8编码。
     // 如果字节数组不是utf8编码，会导致未定义行为。
     let v = vec![b'h', b'e', b'l', b'l', b'o'];
     let s = unsafe { String::from_utf8_unchecked(v) };

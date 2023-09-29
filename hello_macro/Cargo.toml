@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 hello_macro_derive = { path = "./hello_macro_derive" }
+syn = "2.0.37"
