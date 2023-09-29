@@ -29,7 +29,10 @@ async fn worker(i: i32) {
 
 fn main() -> io::Result<()> {
     // 默认情况下，Tokio 启动的工作线程数和 CPU 核数相等，也可以自定义。
-    let runtime = Builder::new_multi_thread().worker_threads(1).build()?;
+    let runtime = Builder::new_multi_thread()
+        .enable_all()
+        .worker_threads(1)
+        .build()?;
 
     runtime.spawn(worker(1));
     // tokio 是协作式调度，所以如果想要让 worker 2 有机会执行，就需要让 worker 1 主动让出 CPU。
