@@ -7,6 +7,10 @@ type Link<T> = Option<NonNull<Node<T>>>;
 // NonNull 的优势：
 // 非空指针。会自动检查包装的指针是否为空。
 // 协变。方便安全抽象。如果用裸指针，则需要配合 PhantomData类型来保证协变。
+// Cat 是 Animal 的子类型。那么对于随意的（一元）类型构造器 M， M<Cat> 和 M<Animal> 可能会有什么关系呢？
+// 协变（covariance），M<Cat>: M<Animal> 它们维持内部参数的关系不变(Cat继承Animal)。
+// 逆变（contravariance），M<Animal>: M<Cat> 它们的关系被反转了。
+// 不变（invariance），两者没有任何子类型关系。
 struct MyLinkedList<T>
 where
     T: Debug,
