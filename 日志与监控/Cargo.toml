@@ -1,0 +1,29 @@
+[package]
+name = "日志与监控"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+    "fmt",
+    "time",
+    "local-time",
+] }
+env_logger = "0.10"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+hex = "0.4"
+tokio = { version = "1.0", features = ["full"] }
+tracing-appender = "0.2"
+color-eyre = "0.6"
+tracing-error = "0.2.0"
+chrono = "0.4.31"
+
+[[example]]
+name = "example1"
+path = "examples"
