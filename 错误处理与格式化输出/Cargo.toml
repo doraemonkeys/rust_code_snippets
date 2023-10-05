@@ -1,5 +1,5 @@
 [package]
-name = "其他"
+name = "错误处理与格式化输出"
 version = "0.1.0"
 edition = "2021"
 
