@@ -35,8 +35,8 @@ fn main() {
         .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
-    info!("This will be logged to stdout");
+    info!("This will _not_ be logged to stdout, but to a file");
     log::info!("This will _not_ be logged to stdout");
-    tracing::trace!("This will be logged to stdout");
-    std::thread::sleep(std::time::Duration::from_secs(60));
+    tracing::trace!("This will be logged to stdout, but to a file");
+    // std::thread::sleep(std::time::Duration::from_secs(60));
 }
