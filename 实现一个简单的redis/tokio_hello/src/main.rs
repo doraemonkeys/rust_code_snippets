@@ -173,7 +173,8 @@ async fn study_hello_tokio() {
     // 使用 Tokio 提供的异步锁
     println!("--------------------tokio::sync::Mutex-------------------");
     // Tokio 提供的锁最大的优点就是：它可以在 `.await` 执行期间被持有，而且不会有任何问题。
-    // 但是代价就是，这种异步锁的性能开销会更高，因此如果可以，使用之前的两种方法来解决会更好。
+    // 但是代价就是，这种异步锁的性能开销会更高，同时也会更加容易造成死锁。
+    // 因此如果可以，使用之前的两种方法来解决会更好。
 
     // 下面的代码会编译
     // 但是就这个例子而言，之前的方式会更好
@@ -185,8 +186,23 @@ async fn study_hello_tokio() {
         _do_something_async().await;
     } // 锁在这里被释放
 
-    // eample:将锁进行分片
+    // tokio死锁的例子
+    println!("--------------------tokio死锁的例子-------------------");
+    // 由于 Tokio 的异步锁可以在 `.await` 执行期间被持有，因此在某些情况下，
+    // 你可能会不小心的在同一个任务中多次获取锁，这样就会造成死锁。
+    // 例如:
+    async fn _deadlock_example(mutex: &tokio::sync::Mutex<i32>) {
+        let mut lock = mutex.lock().await;
+        *lock += 1;
 
+        // 这里会发生死锁，因为在 `.await` 执行期间，锁已经被持有了。
+        // 这种情况一般发生的很隐蔽，因为rust编译器不会报错，运行时也不会Panic，
+        // 发生死锁的线程就这样一直被阻塞。
+        let mut lock2 = mutex.lock().await;
+        *lock2 += 1;
+    }
+
+    // eample:将锁进行分片
     study_tokio_split_lock();
 }
 
