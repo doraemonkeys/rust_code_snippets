@@ -128,7 +128,7 @@ async fn study_hello_tokio() {
         *lock += 1;
         drop(lock); // 释放锁，编译器在这里不够聪明，目前它只能根据作用域的范围来判断
 
-        // 其实这样是可以的(引用类型在最后一次使用后，作用域就会结束)
+        // 其实这样是可以的(临时变量无变量绑定，语句结束立即析构)
         // *mutex.lock().unwrap() += 1;
         _do_something_async().await;
     }
@@ -145,7 +145,7 @@ async fn study_hello_tokio() {
     println!("--------------------refactor-------------------");
     // 之前的代码其实也是为了在 `.await` 期间不持有锁，但是我们还有更好的实现方式，
     // 例如，你可以把 `Mutex` 放入一个结构体中，并且只在该结构体的非异步方法中使用该锁:
-    // 其实本质就是引用类型在最后一次使用后，作用域就会结束。
+    // 方法结束后，锁会立即被释放(析构)，因此在 `.await` 期间不会持有锁。
     struct CanIncrement {
         mutex: Mutex<i32>,
     }
@@ -159,7 +159,6 @@ async fn study_hello_tokio() {
 
     async fn increment_and_do_stuff2(can_incr: &CanIncrement) {
         can_incr.increment();
-        // 引用类型在最后一次使用后，作用域就会结束
         _do_something_async().await;
     }
     // 现在，我们可以在 `.await` 期间不持有锁了:
