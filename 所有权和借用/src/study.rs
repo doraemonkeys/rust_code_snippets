@@ -80,6 +80,34 @@ fn study_mutable_and_immutable_reference() {
 
     // 对于这种编译器优化行为，Rust 专门起了一个名字 —— Non-Lexical Lifetimes(NLL) ，
     // 专门用于找到某个引用在作用域(`}`)结束前就不再被使用的代码位置。
+
+    // 值得注意的是，NLL仅影响借用检查，并不会改变对象的实际生命周期。
+    // Rust 广泛使用 RAII，因此一些对象的实现，例如锁，必须具有确定的可预测的生命周期。
+    // NLL 没有改变这些对象的生命周期，因此它们的析构函数在与之前完全相同的点执行：在它们的词法作用域的末尾。
+    fn nll_example() {
+        struct Foo {
+            i: i32,
+        }
+        impl Drop for Foo {
+            fn drop(&mut self) {
+                println!("drop foo {}", self.i);
+            }
+        }
+        // 临时变量无变量绑定，语句结束立即析构
+        (&mut Foo { i: 100 }).i += 1; // 这里创建了一个临时变量，drop函数立即执行
+        let x = &mut Foo { i: 1 };
+        x.i = 3;
+        println!("x.x = {}", x.i); //尽管x的作用域在这里结束，但是drop函数在这里并没有执行
+        let y = &mut Foo { i: 2 };
+        y.i = 4;
+        println!("y.x = {}", y.i);
+        // drop foo 101
+        // x.x = 3
+        // y.x = 4
+        // drop foo 4
+        // drop foo 3
+    }
+    nll_example();
 }
 
 fn study_mutable_reference() {
