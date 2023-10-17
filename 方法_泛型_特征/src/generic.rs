@@ -1,5 +1,34 @@
 pub fn study_generic() {
     study_generic2();
+
+    // 幽灵数据
+    study_phantom_data();
+}
+
+fn study_phantom_data() {
+    println!("------------------幽灵数据------------------");
+    // 在处理不安全代码时，我们经常会遇到这样的情况：
+    // 类型或生命周期在逻辑上与结构相关，但实际上并不是字段的一部分。
+    // 这种情况最常发生在生命周期上。例如，&'a [T]的Iter（大约）定义如下：
+    // struct Iter<'a, T: 'a> { // parameter `'a` is never used
+    //     ptr: *const T,
+    //     end: *const T,
+    // }
+    // 由于'a在结构体中是未使用的，所以它是无约束的。
+    // 在结构定义中，不受约束的生命周期和类型是禁止的，
+    //  因此我们必须在主体中以某种方式引用这些类型，正确地做到这一点对于正确的变异性和丢弃检查是必要的。
+
+    // 我们使用PhantomData来做这个，它是一个特殊的标记类型。PhantomData不消耗空间，
+    // 但为了静态分析的目的，模拟了一个给定类型的字段。这被认为比明确告诉类型系统你想要的变量类型更不容易出错，
+    // 同时也提供了其他有用的东西，例如 auto traits 和 drop check 需要的信息。
+    // Iter 逻辑上包含一堆&'a T，所以这正是我们告诉PhantomData要模拟的。
+    use std::marker;
+    struct _Iter<'a, T: 'a> {
+        ptr: *const T,
+        end: *const T,
+        _marker: marker::PhantomData<&'a T>,
+    }
+    // 就是这样，生命周期将被限定，而你的迭代器将在'a和T上进行协变。所有的东西都是有效的。
 }
 
 fn study_generic2() {
