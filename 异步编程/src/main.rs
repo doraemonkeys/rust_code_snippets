@@ -912,26 +912,23 @@ fn example_study_pin_and_unpin_1() {
             unsafe { &*(self.b) }
         }
     }
-    // 此时的`test1`可以被安全的移动
+    // 此时的`test1`可以被随意的移动
     let mut test1 = Test::new("test1");
     // 一旦类型实现了 `!Unpin` ，那将它的值固定到栈( `stack` )上就是不安全的行为，
     // 因此在代码中我们使用了 `unsafe` 语句块来进行处理
     // 新的`test1`由于使用了`Pin`，因此无法再被移动，这里的声明会将之前的`test1`遮蔽掉(shadow)
+    // 你也可以使用 pin_utils(https://docs.rs/pin-utils/)来避免 unsafe 的使用
     let mut test1 = unsafe { Pin::new_unchecked(&mut test1) };
     Test::init(test1.as_mut());
-    // 现在 test1中的 a: String 会永远被固定在内存中的某个位置，不会再被移动。
-    // a 也不能再修改为其他值，因为这样会导致它的值被移动，除非我们使用 unsafe 语句块。
-    // b 同理。你也可以使用 pin_utils(https://docs.rs/pin-utils/)来避免 unsafe 的使用
     let mut test2 = Test::new("test2");
     let mut test2 = unsafe { Pin::new_unchecked(&mut test2) };
     Test::init(test2.as_mut());
-
     println!(
         "a: {}, b: {}",
         Test::a(test1.as_ref()),
         Test::b(test1.as_ref())
     );
-    // 再去尝试移动被固定的值，就会导致编译错误：
+    // 再去尝试移动被Pin 固定的 !Unpin 类型，是不被允许的：
     // std::mem::swap(test1.get_mut(), test2.get_mut());
     println!("a: {}, b: {}", test2.as_ref().a(), Test::b(test2.as_ref()));
 }
