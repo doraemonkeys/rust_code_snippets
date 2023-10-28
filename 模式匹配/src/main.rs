@@ -72,6 +72,26 @@ fn study_at_binding() {
         }
         _ => {}
     }
+
+    type Color = (i32, i32, i32);
+
+    fn is_color(color: Color) -> bool {
+        match color {
+            (r @ 0..=255, g @ 0..=255, b @ 0..=255) => {
+                println!("r is {}, g is {}, b is {}", r, g, b);
+                true
+            }
+            _ => {
+                println!("invalid color: {:?}", color);
+                false
+            }
+        }
+    }
+
+    let color = (123, 123, 132);
+    let invalid_color = (123, 123, 256);
+    assert_eq!(is_color(color), true);
+    assert_eq!(is_color(invalid_color), false);
 }
 
 fn study_more_pattern() {
