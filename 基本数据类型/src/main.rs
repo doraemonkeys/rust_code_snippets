@@ -39,6 +39,18 @@ fn study_global_variable() {
     // 静态变量不会被内联，在整个程序中，静态变量只有一个实例，所有的引用都会指向同一个地址；
     // 存储在静态变量中的值必须要实现 Sync trait
 
+    // const 和 static 的区别
+    fn foo() -> (i32, i32) {
+        static X1: AtomicUsize = AtomicUsize::new(1);
+        const X2: AtomicUsize = AtomicUsize::new(99);
+        (
+            X1.fetch_add(1, Ordering::SeqCst) as i32,
+            X2.fetch_add(1, Ordering::SeqCst) as i32,
+        )
+    }
+    println!("first call foo: {:?}", foo()); // (1, 99)
+    println!("second call foo: {:?}", foo()); // (2, 99)
+
     // 原子类型
     println!("-----------------原子类型-----------------");
     // 想要全局计数器、状态控制等功能，又想要线程安全的实现，原子类型是非常好的办法。
