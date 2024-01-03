@@ -8,3 +8,8 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.16.1", features = ["full"] }
 rand = "0.8.4"
+
+
+[[example]]
+name = "example1"
+path = "examples/example1.rs"
