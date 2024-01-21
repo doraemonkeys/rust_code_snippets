@@ -71,8 +71,8 @@ pub fn study_trait() {
     study_eq_and_partial_eq();
 
     // AsRef 提高代码的复用性
-    fn _example_as_ref<T: AsRef<u8>>(data: T) {
-        let _data: &u8 = data.as_ref();
+    fn _example_as_ref<T: AsRef<[u8]>>(data: T) {
+        let _data: &[u8] = data.as_ref();
         // do something
     }
 }
