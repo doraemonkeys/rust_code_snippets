@@ -69,6 +69,12 @@ pub fn study_trait() {
 
     // Eq 和 PartialEq
     study_eq_and_partial_eq();
+
+    // AsRef 提高代码的复用性
+    fn _example_as_ref<T: AsRef<u8>>(data: T) {
+        let _data: &u8 = data.as_ref();
+        // do something
+    }
 }
 
 fn study_eq_and_partial_eq() {
