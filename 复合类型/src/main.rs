@@ -149,8 +149,8 @@ fn study_string() {
     // String 与 &str 的转换
     println!("-----------------String 与 &str 的转换-----------------");
     // 1. &str -> String
-    let s = "hello world";
-    let s = s.to_string();
+    let s: &str = "hello world";
+    let s: String = s.to_string();
     println!("{}", s);
     let s2 = String::from(s);
     println!("{}", s2);
@@ -162,7 +162,7 @@ fn study_string() {
     say_hello(s.as_str());
 
     // [u8] -> String
-    println!("-----------------[u8] -> String-----------------");
+    println!("-----------------[u8;N]/&[u8] -> String-----------------");
     // 1. 使用 from_utf8() 函数
     let bytes = [104u8, 101, 108, 108, 111];
     let s = String::from_utf8(bytes.to_vec()).unwrap();
@@ -177,7 +177,7 @@ fn study_string() {
     println!("{}", s);
 
     // String -> [u8]
-    println!("-----------------String -> [u8]-----------------");
+    println!("-----------------String -> &[u8]-----------------");
     // 1. 使用 as_bytes() 方法
     let s = String::from("hello");
     let bytes = s.as_bytes();
@@ -193,7 +193,7 @@ fn study_string() {
     println!("{:?}", bytes);
 
     // [u8] -> &str
-    println!("-----------------[u8] -> &str-----------------");
+    println!("-----------------[u8;N] -> &str-----------------");
     // 1. 使用 from_utf8() 函数
     let bytes = [104u8, 101, 108, 108, 111];
     let s = std::str::from_utf8(&bytes).unwrap();
@@ -209,7 +209,7 @@ fn study_string() {
     println!("{}", s);
 
     // &str -> [u8]
-    println!("-----------------&str -> [u8]-----------------");
+    println!("-----------------&str -> &[u8]-----------------");
     // 1. 使用 as_bytes() 方法
     let s = "hello";
     let bytes = s.as_bytes();
