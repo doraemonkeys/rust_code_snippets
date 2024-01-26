@@ -11,6 +11,8 @@ fn main() {
     study_string();
     //操作字符串
     study_string_operation();
+    // OsString 和 OsStr
+    study_os_string();
     // 字符串转义
     study_string_escape();
     // 元组
@@ -286,4 +288,28 @@ fn study_slice() {
 }
 fn first_word(s: &String) -> &str {
     &s[..1]
+}
+
+fn study_os_string() {
+    println!("-----------------OsString 和 OsStr-----------------");
+    // OsString 和 OsStr 类型是针对操作系统的原生字符串类型，可以与String方便的转换。
+    // https://rustwiki.org/zh-CN/std/ffi/index.html
+
+    // 有些编程语言允许非法 Unicode 字符串存在
+    // 如果只考虑 Unicode 的合法编码，String、&str 只能保存 UTF-8 格式的字符串当然没问题。
+    // 但是， 依据 Unicode 的编码规则可以发现，其编码空间存在不少空白区间，这就构成了“非法”的 Unicode 编码。
+    // 这些非法编码虽然无法映射成任何语言符号，但是，客观上的确存在这样的编码。
+    // 或许某个程序猿为了特殊的目的，就硬给你拼出来一个这样的非法字符串。
+
+    // C、C++ 这类的编程语言并不会在乎字符串编码的合法性，只要你能编出来，它就接受，
+    // 合法不合法，程序设计语言才不管呢。
+
+    // 但是，Rust 却背起了编码合法性检查的大锅，确保不会出现非法 Unicode 字符串。
+    // 但是，如果 Rust 在与其他语言对接的时候，如果收到非法字符串，就无法处理了。
+    // 所以说，多一事不如少一事，不能随意增加功能的内涵，关键时候会自缚手脚。
+    // OsString、OsStr 应运而生
+    // 万般无奈的情况下，只好新设计一套新的字符串类型，用来在做 FFI 接口的时候放弃字符串合法性检查，
+    // 并把这种允许非法字符存在的编码格式美其名曰——WTF-8。
+    // 根据设计文档，OsString、OsStr 作用分别类似 String 和 &str，但是不再做合法性检查。
+    // 因此，其他编程语言传过来的字符串，他们照单全收。
 }
