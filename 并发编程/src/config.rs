@@ -14,19 +14,19 @@ impl Config {
         Self { ip, port }
     }
 
-    pub fn access<T: AccessMode>(self) -> ConfigAccess<T> {
-        ConfigAccess {
+    pub fn access<M: AccessMode>(self) -> RWAccess<Config, M> {
+        RWAccess {
             config: Arc::new(RwLock::new(self)),
             _phantom: std::marker::PhantomData,
         }
     }
 
     #[allow(dead_code)]
-    pub fn read_only(self) -> ConfigAccess<ReadAccess> {
+    pub fn read_only(self) -> RWAccess<Config, ReadAccess> {
         self.access()
     }
 
-    pub fn read_write(self) -> ConfigAccess<WriteAccess> {
+    pub fn read_write(self) -> RWAccess<Config, WriteAccess> {
         self.access()
     }
 }
@@ -49,26 +49,26 @@ impl AccessMode for ReadAccess {}
 impl AccessMode for WriteAccess {}
 
 #[derive(Clone, Debug)]
-pub struct ConfigAccess<T: AccessMode> {
-    config: Arc<RwLock<Config>>,
-    _phantom: std::marker::PhantomData<T>,
+pub struct RWAccess<T: ?Sized, M: AccessMode> {
+    config: Arc<RwLock<T>>,
+    _phantom: std::marker::PhantomData<M>,
 }
 
 // 读写的公共方法
-impl<T: AccessMode> ConfigAccess<T> {
-    pub fn read(&self) -> RwLockReadGuard<'_, Config> {
+impl<T, M: AccessMode> RWAccess<T, M> {
+    pub fn read(&self) -> RwLockReadGuard<'_, T> {
         self.config.read().unwrap()
     }
 }
 
 // 读的私有方法
-impl ConfigAccess<WriteAccess> {
-    pub fn write(&self) -> RwLockWriteGuard<'_, Config> {
+impl<T> RWAccess<T, WriteAccess> {
+    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
         self.config.write().unwrap()
     }
 
-    pub fn clone_reader(&self) -> ConfigAccess<ReadAccess> {
-        ConfigAccess {
+    pub fn clone_reader(&self) -> RWAccess<T, ReadAccess> {
+        RWAccess {
             config: self.config.clone(),
             _phantom: std::marker::PhantomData,
         }
