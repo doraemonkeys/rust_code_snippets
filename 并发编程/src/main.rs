@@ -1,3 +1,4 @@
+mod config;
 fn main() {
     // 线程的使用
     study_thread();
@@ -28,6 +29,23 @@ fn main() {
 
     // scoped thread
     study_scoped_thread();
+
+    config_example();
+}
+
+fn config_example() {
+    let config = config::Config::new("192.168.1.111".to_string(), 8080);
+    let cnf_writer = config.read_write();
+    assert_eq!(cnf_writer.read().ip, "192.168.1.111");
+
+    let config_reader = cnf_writer.clone_reader();
+
+    cnf_writer.write().ip = "hhhhh".to_string();
+    assert_eq!(config_reader.read().ip, "hhhhh");
+
+    let cnf_writer2 = cnf_writer.clone();
+    let config_reader2 = config_reader.clone();
+    assert_eq!(cnf_writer2.read().ip, config_reader2.read().ip, "hhhhh");
 }
 
 fn study_scoped_thread() {
