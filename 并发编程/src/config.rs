@@ -59,19 +59,19 @@ impl<T, M: AccessMode> RWAccess<T, M> {
     pub fn read(&self) -> RwLockReadGuard<'_, T> {
         self.config.read().unwrap()
     }
-}
-
-// 读的私有方法
-impl<T> RWAccess<T, WriteAccess> {
-    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
-        self.config.write().unwrap()
-    }
 
     pub fn clone_reader(&self) -> RWAccess<T, ReadAccess> {
         RWAccess {
             config: self.config.clone(),
             _phantom: std::marker::PhantomData,
         }
+    }
+}
+
+// 读的私有方法
+impl<T> RWAccess<T, WriteAccess> {
+    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
+        self.config.write().unwrap()
     }
 }
 
