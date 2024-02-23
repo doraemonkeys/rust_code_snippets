@@ -320,6 +320,30 @@ fn study_same_name_method() {
     // 没有 `self` 的例子
     println!("A baby dog is called a {}", Dog::baby_name());
     println!("A baby dog is called a {}", <Dog as Animal>::baby_name());
+
+    println!("----------------奇怪的例子----------------");
+    trait Foo {
+        fn abs(self) -> Self;
+    }
+
+    impl Foo for i64 {
+        fn abs(self) -> i64 {
+            println!("Foo self {}", self);
+            2 * self
+        }
+    }
+
+    let x: i64 = 42;
+    assert_eq!(x.abs(), 42);
+    // 调用不同特征的同名方法
+    assert_eq!(<i64 as Foo>::abs(x), 84);
+
+    // https://github.com/rust-lang/rust/issues/99405
+    let x2 = 42;
+    println!("-----------------1");
+    assert_eq!(x2.abs(), 84);
+    println!("-----------------2");
+    assert_eq!(x2.abs(), 42); //????
 }
 
 fn study_associated_type() {
