@@ -68,7 +68,7 @@ impl<T, M: AccessMode> RWAccess<T, M> {
     }
 }
 
-// 读的私有方法
+// 写的私有方法
 impl<T> RWAccess<T, WriteAccess> {
     pub fn write(&self) -> RwLockWriteGuard<'_, T> {
         self.config.write().unwrap()
