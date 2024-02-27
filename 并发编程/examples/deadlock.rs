@@ -51,12 +51,25 @@ fn _good_example2() {
     // do something else
 }
 
-// 虽然临时变量会直接析构，但是锁的作用域依然会持续到函数的结束，
-// 因此请不要在同一个函数的参数中多次获取锁，即使是不同的锁(鬼知道他们之间会不会有关联)。
 fn _bad_example2() {
     println!("bad example2");
+    // 虽然临时变量会直接析构，但是锁的作用域依然会持续到函数的结束，
+    // 因此请不要在同一个函数的参数中多次获取锁，即使是不同的锁(鬼知道他们之间会不会有关联)。
     _foo(LOCK1.lock().unwrap().port, LOCK1.lock().unwrap().port);
     println!("this will never be printed");
+}
+
+fn _bad_example22() {
+    println!("bad example22");
+    // 虽然临时变量会直接析构，但是锁的作用域依然会持续到match块的结束，
+    match LOCK1.lock().unwrap().host.is_empty() {
+        true => println!("empty"),
+        false => {
+            println!("not empty");
+            println!("host = {}", LOCK1.lock().unwrap().host); // 这里会死锁
+            println!("this will never be printed");
+        }
+    }
 }
 
 // 通过锁获取到的引用，会一直持有锁，直到引用离开作用域。
