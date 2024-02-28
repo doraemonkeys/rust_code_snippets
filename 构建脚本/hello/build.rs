@@ -29,6 +29,7 @@ use std::path::Path;
 // 在构建脚本成功执行后，我们的项目就会开始进行编译。如果构建脚本的运行过程中发生错误，
 // 脚本应该通过返回一个非 0 码来立刻退出，在这种情况下，构建脚本的输出会被打印到终端中。
 
+// build.rs中可以设置环境变量，这些环境变量会在编译时被 Cargo 传递给 rustc。
 fn main() {
     let out_dir = env::var_os("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("hello.rs");
