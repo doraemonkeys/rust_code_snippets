@@ -312,6 +312,7 @@ fn study_arc() {
     // 当然，还有更深层的原因：由于 `Rc<T>` 需要管理引用计数，
     // 但是该计数器并没有使用任何并发原语，因此无法实现原子化的计数操作，最终会导致计数错误。
     // `Arc` 是 `Rc` 的多线程版本，其全称是 `Atomically Reference Counted`，即原子引用计数。
+    // 注意：T实现了Send和Sync, Arc<T>才会实现Send和Sync
 
     // 多线程直接引用会报错:`closure may outlive the current function,`,
     // 原因在于编译器无法确定主线程`main`和子线程`t`谁的生命周期更长，特别是当两个线程都是子线程时，
