@@ -10,7 +10,7 @@ use quote::quote;
 // 最后，操作的结果又会被 quote 包转换回 Rust 代码。
 // 这些包非常关键，可以帮我们节省大量的精力，
 // 否则你需要自己去编写支持代码解析和还原的解析器，这可不是一件简单的任务！
-use syn;
+// use syn;
 use syn::DeriveInput;
 
 // 对于绝大多数过程宏而言，这段代码往往只在 impl_hello_macro(&ast) 中的实现有所区别，
