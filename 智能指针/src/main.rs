@@ -33,6 +33,7 @@ fn main() {
     // RefCell<T> 拥有内部可变性的智能指针，规避编译期的借用检查，实现Send + !Sync (并发编程章节)。
     // Mutex<T> 互斥锁，同样拥有内部可变性，用于多线程，实现Send + Sync。
     // Mutex<T> 和 RefCell<T> 的区别在于，Mutex<T> 可以在多线程中安全的传递引用。
+    // 更多：并发编程\src\main.rs:154
 
     // Box的使用场景
     study_box();
@@ -312,7 +313,15 @@ fn study_arc() {
     // 当然，还有更深层的原因：由于 `Rc<T>` 需要管理引用计数，
     // 但是该计数器并没有使用任何并发原语，因此无法实现原子化的计数操作，最终会导致计数错误。
     // `Arc` 是 `Rc` 的多线程版本，其全称是 `Atomically Reference Counted`，即原子引用计数。
-    // 注意：T实现了Send和Sync, Arc<T>才会实现Send和Sync
+
+    // T实现了Send和Sync, Arc<T>才会实现Send和Sync，为什么不能将非线程安全的类型T放在Arc<T>中以使其线程安全?
+    // 这乍一看可能有点反直觉:毕竟，Arc<T的重点不就是>线程安全吗?
+    // 关键是:Arc<T>使其对同一数据具有多个所有权是线程安全的，但它没有为其数据增加线程安全性。
+    // 考虑Arc<RefCell<T>>。[RefCell<T>]没有实现Sync，
+    // 如果总是为Arc<T>实现Send，那么Arc<RefCell<T>>相当于为RefCell<T>做了多线程的引用。
+
+    // T: Sync 等价于&T: Send，意义上是某个数据能否被多个线程同时不可变地访问。
+    // 只需实现Sync，则可以包括但不限于 放进Arc里并将Arc复制后传给别的线程。
 
     // 多线程直接引用会报错:`closure may outlive the current function,`,
     // 原因在于编译器无法确定主线程`main`和子线程`t`谁的生命周期更长，特别是当两个线程都是子线程时，
