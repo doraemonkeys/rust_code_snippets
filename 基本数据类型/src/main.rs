@@ -72,6 +72,12 @@ fn study_global_variable() {
         // lazy_static 定义后直到使用该变量，才进行初始化，非常 lazy static 。
         static ref NAMES: Mutex<String> = Mutex::new(String::from("Sunface, Jack, Allen"));
     }
+    // OnceCell
+    println!("-----------------OnceCell-----------------");
+    #[allow(unused_imports)]
+    use std::cell::OnceCell;
+    // OnceCell 是用于单线程环境下的懒加载数据结构。
+    // 它可以用来存储某个值，并在需要时进行初始化，但是只能在单线程环境下使用。
 
     // OnceLock
     println!("-----------------OnceLock-----------------");
