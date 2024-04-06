@@ -52,6 +52,7 @@ fn study_closure_lifetime() {
         x
     }
     // let closure_slision = |x: &i32| -> &i32 { x };
+
     // 两个一模一样功能的函数，一个正常编译，一个却报错，
     // 错误原因是编译器无法推测返回的引用和传入的引用谁活得更久！
     // 对于函数的生命周期而言，它的消除规则之所以能生效是因为它的生命周期完全体现在签名的引用类型上，在函数体中无需任何体现。
@@ -104,12 +105,13 @@ fn study_closure_as_return_value() {
 // 该函数将闭包作为参数并调用它。
 fn apply<F>(f: F)
 where
-    // 闭包没有输入值和返回值。
+    // FnOnce表明此闭包可能会转移（move）捕获的环境变量，但是依然可以传入引用。
     F: FnOnce(),
 {
     // ^ 试一试：将 `FnOnce` 换成 `Fn` 或 `FnMut`。
 
     f();
+    // f(); FnOnce 顾名思义，说明该闭包只能运行一次，除非实现了F: FnOnce() + Copy
 }
 
 // 输入闭包，返回一个 `i32` 整型的函数。
@@ -118,7 +120,23 @@ where
     // 闭包处理一个 `i32` 整型并返回一个 `i32` 整型。
     F: Fn(i32) -> i32,
 {
+    f(3);
     f(3)
+}
+
+fn exec_fn_once<F: FnOnce()>(f: F) {
+    f()
+}
+
+fn exec_fn_mut<F: FnMut()>(mut f: F) {
+    f()
+}
+// Fn闭包表示只有被捕获变量的不可变引用，或者根本不捕获任何东西。
+fn exec_fn<F: Fn()>(f: F) {
+    f();
+    // 任何Fn实例都实现了FnMut和FnOnce，所以可以调用exec_fn_mut和exec_fn_once
+    // exec_fn_mut(f);
+    exec_fn_once(f)
 }
 
 fn study_closure_as_parameter() {
@@ -152,6 +170,20 @@ fn study_closure_as_parameter() {
     let double = |x| 2 * x;
 
     println!("3 doubled: {}", apply_to_3(double));
+
+    println!("------------------三种 Fn 的关系------------------");
+    // 一个闭包实现了哪种 Fn 特征取决于该闭包如何使用被捕获的变量，
+    // 而不是取决于闭包如何捕获它们，跟是否使用 move 没有必然联系。
+
+    // 所有的闭包都自动实现了 FnOnce 特征，因此任何一个闭包都至少可以被调用一次
+    // 没有移出所捕获变量的所有权的闭包自动实现了 FnMut 特征
+    // 不需要对捕获变量进行改变的闭包自动实现了 Fn 特征
+    let s = String::new();
+    // 闭包只是对 s 进行了不可变借用，实际上，它可以适用于任何一种 Fn 特征
+    let update_string = || println!("{}", s);
+    exec_fn_once(update_string);
+    exec_fn_mut(update_string);
+    exec_fn(update_string);
 }
 
 fn study_closure_capture() {
