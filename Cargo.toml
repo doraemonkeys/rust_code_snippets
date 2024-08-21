@@ -1,0 +1,61 @@
+[package]
+name = "learning_materials"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+
+[workspace]
+members = [
+    "bytes",
+    "c调用rust",
+    "hello_macro",
+    "linked_list",
+    "minigrep",
+    "rust_golang_ffi_demo/rustdemo",
+    "rust调用c",
+    "sayhello_lib",
+    "study_test",
+    "timer_future",
+    "unsafe_rust",
+    "world_hello",
+    "world_hello2",
+    "基本数据类型",
+    "复合类型",
+    "宏编程",
+    "并发编程",
+    "异步编程",
+    "循环引用与自引用",
+    "所有权和借用",
+    "文件操作",
+    "方法_泛型_特征",
+    "日志与监控",
+    "智能指针",
+    # "构建脚本/链接系统库",
+    # "构建脚本/hello",
+    # "构建脚本/条件编译",
+    # "mytest",
+    "模式匹配",
+    "流程控制",
+    "猜数游戏",
+    "生命周期",
+    "配置文件",
+    "错误处理与格式化输出",
+    "实现一个简单的redis/hello-my-redis",
+    "实现一个简单的redis/mini_redis",
+    "实现一个简单的redis/my-redis-共享状态",
+    "实现一个简单的redis/my-redis-stream",
+    "实现一个简单的redis/tokio_协作式调度",
+    "实现一个简单的redis/tokio_异步跟同步共存",
+    "实现一个简单的redis/tokio_异步原理",
+    "实现一个简单的redis/tokio_优雅的关闭",
+    "实现一个简单的redis/tokio_hello",
+    "实现一个简单的redis/tokio_select",
+    "实现一个简单的redis/tokio_stream",
+    "实现一个简单的redis/tokio_tcp",
+    "web服务器/单线程版本的_web_服务器",
+    "web服务器/实践多线程_web服务器",
+    "web服务器/异步_web服务器",
+    "web服务器/异步多线程_web服务器",
+]

@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "方法"
+name = "方法_泛型_特征"
 version = "0.1.0"

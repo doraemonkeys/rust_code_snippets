@@ -1,4 +1,4 @@
-workspace = { members = ["链接系统库"] }
+# workspace = { members = ["链接系统库"] }
 [package]
 name = "hello-from-generated-code"
 version = "0.1.0"
