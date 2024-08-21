@@ -130,6 +130,27 @@ fn study_macro_rules() {
     //     temp_vec
     // }
 
+    #[allow(dead_code)]
+    trait ToFloat64 {
+        fn to_f64(&self) -> Option<f64>;
+    }
+
+    // valid fragment specifiers are `ident`, `block`, `stmt`, `expr`, `pat`, `ty`, `lifetime`, `literal`, `path`, `meta`, `tt`, `item` and `vis`
+    // 这里ty表示类型，而expr表示表达式
+    macro_rules! impl_to_float64 {
+        ($($t:ty),*) => {
+            $(
+                impl ToFloat64 for $t {
+                    fn to_f64(&self) -> Option<f64> {
+                        Some(*self as f64)
+                    }
+                }
+            )*
+        };
+    }
+
+    impl_to_float64!(u8, u16, u32, u64, u128, i32, i64, f64, f32);
+
     // 未来将被替代的 `macro_rules`
     println!("---------------------未来将被替代的 macro_rules---------------------");
     // 对于 `macro_rules` 来说，它是存在一些问题的，因此，Rust 计划在未来使用新的声明式宏来替换它。
