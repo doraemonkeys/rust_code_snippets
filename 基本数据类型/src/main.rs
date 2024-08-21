@@ -73,19 +73,17 @@ fn study_global_variable() {
         static ref NAMES: Mutex<String> = Mutex::new(String::from("Sunface, Jack, Allen"));
     }
     // OnceCell
-    println!("-----------------OnceCell-----------------");
+    println!("-----------------OnceCell OnceLock LazyCell LazyLock-----------------");
+    // OnceCell 单线程环境 OnceLock 多线程环境
+    // LazyCell 单线程环境 LazyLock 多线程环境
     #[allow(unused_imports)]
     use std::cell::OnceCell;
     // OnceCell 是用于单线程环境下的懒加载数据结构。
     // 它可以用来存储某个值，并在需要时进行初始化，但是只能在单线程环境下使用。
-
-    // OnceLock
-    println!("-----------------OnceLock-----------------");
     // OnceCell 和它的线程安全对应类型 OnceLock两个新的类型在1.70稳定下来，用于共享数据的一次性初始化。
 
     use std::sync::OnceLock;
     static DATA: OnceLock<&str> = OnceLock::new();
-
     fn init_example() {
         let winner = std::thread::scope(|s| {
             s.spawn(|| DATA.set("thread"));
@@ -99,8 +97,23 @@ fn study_global_variable() {
 
         println!("{winner} wins!");
     }
-
     init_example();
+
+    use std::sync::LazyLock;
+    #[derive(Debug)]
+    struct UseCellLock {
+        number: LazyLock<u32>,
+    }
+    fn lazy_lock_example() {
+        let lock: LazyLock<u32> = LazyLock::new(|| {
+            println!("LazyLock initializing...");
+            42
+        });
+        let data = UseCellLock { number: lock };
+        println!("uninitialized");
+        println!("{}", *data.number); //使用时初始化
+    }
+    lazy_lock_example();
 
     // Box::leak
     println!("-----------------Box::leak-----------------");
