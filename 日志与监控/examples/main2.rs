@@ -107,8 +107,11 @@ fn main() {
             \"fingerprint\": \"0xF9BA143B95FF6D82\",
             \"location\": \"Menlo Park, CA\"
         }";
-    let json: User =
-        tracing::info_span!("json.parse").in_scope(|| serde_json::from_slice(j).unwrap());
+    let json: User = tracing::info_span!("json.parse").in_scope(|| {
+        let r = serde_json::from_slice(j).unwrap();
+        info!("parsed json: {:?}", r);
+        r
+    });
     println!("{:?}", json);
 
     println!("----------------------------async 中使用 span---------------------------------");
