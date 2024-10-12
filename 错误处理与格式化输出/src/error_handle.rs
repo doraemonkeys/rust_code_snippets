@@ -69,8 +69,8 @@ fn study_simplify_error_handling() {
 fn example_anyhow() {
     println!("-----------------anyhow-----------------");
     //anyhow 和 thiserror 是同一个作者开发的，这里是作者关于 anyhow 和 thiserror 的原话：
-    // 如果你想要设计自己的错误类型，同时给调用者提供具体的信息时，就使用 thiserror，
-    // 例如当你在开发一个三方库代码时。如果你只想要简单，就使用 anyhow，例如在自己的应用服务中。
+    // 如果你想要设计自己的错误类型，同时给调用者提供具体的信息时，就使用 thiserror，例如当你在开发一个三方库代码时。
+    // 如果你只想要简单，就使用 anyhow，例如在自己的应用服务中。
     use std::fs::read_to_string;
 
     fn main() -> anyhow::Result<()> {

@@ -9,6 +9,34 @@ pub fn stuidy_lifetime_advance() {
     println!("Interface should be dropped here and the borrow released");
 
     use_list(&list);
+
+    println!("------------------高阶特征约束(Higher-ranked trait bounds)-----------------");
+
+    higher_ranked_lifetime_bounds();
+}
+
+fn higher_ranked_lifetime_bounds() {
+    /*
+    fn call_on_ref_zero<'a, F>(f: F)
+    where
+        F: Fn(&'a i32),
+    {
+        let zero = 0;
+        f(&zero); //`zero` does not live long enough
+    }
+     */
+    // 我们想要f函数能够处理任何生命周期的引用
+    fn call_on_ref_zero<F>(f: F)
+    where
+        F: for<'a> Fn(&'a i32),
+    {
+        let zero = 0;
+        f(&zero);
+    }
+    // 通过使用 for<'a>，我们告诉Rust编译器："这个函数 F 可以处理任何生命周期的引用，包括非常短暂的生命周期"。
+    // 这允许我们在函数内部创建一个临时值（zero），取它的引用，并将这个短生命周期的引用传递给 F，而不会有任何生命周期冲突。
+
+    call_on_ref_zero(|a: &i32| println!("{:?}", a));
 }
 
 // 生命周期存在的意义是保证不会出现空引用(悬垂引用)，
