@@ -76,9 +76,11 @@ fn _bad_example222() {
     println!("bad example222");
     // if不会像match一样，这里锁的作用域在进入if块后就结束了。
     // 但仍然不建议在if块中获取锁，不写含糊不清的代码，养成好习惯。
-    if !LOCK1.lock().unwrap().host.is_empty() {
+    if LOCK1.lock().unwrap().host.is_empty() {
         println!("not empty");
         println!("host = {}", LOCK1.lock().unwrap().host); // 这里不会死锁
+    } else if LOCK1.lock().unwrap().port != 0 {
+        println!("port = {}", LOCK1.lock().unwrap().port); // 这里不会死锁
     }
 }
 
