@@ -97,6 +97,7 @@ fn example_anyhow() {
     // 关于如何选用 thiserror 和 anyhow 只需要遵循一个原则即可：是否关注自定义错误消息，
     // anyhow 可以更方便的向上传递错误，但传递的过程中会丢失原本错误的类型，只会留下错误信息。
 }
+#[allow(dead_code)]
 fn example_thiserror() {
     println!("-----------------thiserror-----------------");
     use std::fs::read_to_string;
@@ -128,6 +129,98 @@ fn example_thiserror() {
     if let Err(e) = main() {
         eprintln!("{}", e); // Environment variable not found
         eprintln!("{:?}", e); // EnvironmentVariableNotFound
+    }
+
+    #[derive(thiserror::Error, Debug)]
+    pub enum MyError2 {
+        #[error("IO error: {0}")]
+        Io(#[from] std::io::Error),
+
+        #[error("Parse error: {0}")]
+        Parse(#[from] std::num::ParseIntError),
+
+        #[error("Custom error: {msg}")]
+        Custom { msg: String },
+    }
+
+    // read_and_parse 函数可能会产生 MyError2 的所有三种变体。
+    // 注意我们如何使用 ? 操作符来自动将 std::io::Error 和 std::num::ParseIntError 转换为 MyError。
+    // 也可以使用 map_err 来明确转化错误类型
+    fn read_and_parse(filename: &str) -> Result<i32, MyError2> {
+        let mut file = std::fs::File::open(filename)?; // 可能会产生 Io 错误
+        let mut contents = String::new();
+        use std::io::Read;
+        file.read_to_string(&mut contents)?; // 可能会产生 Io 错误
+
+        let number = contents.trim().parse()?; // 可能会产生 Parse 错误
+
+        if number < 0 {
+            return Err(MyError2::Custom {
+                msg: "Number cannot be negative".to_string(), // 自定义错误信息
+            });
+        }
+
+        Ok(number)
+    }
+
+    // 使用嵌套错误:
+    #[derive(thiserror::Error, Debug)]
+    enum OuterError {
+        #[error("Inner error occurred: {0}")]
+        Inner(#[from] InnerError),
+    }
+
+    #[derive(thiserror::Error, Debug)]
+    enum InnerError {
+        #[error("Something went wrong: {0}")]
+        Oops(String),
+    }
+
+    fn inner_function() -> Result<(), InnerError> {
+        Err(InnerError::Oops("Oops!".to_string()))
+    }
+
+    fn outer_function() -> Result<(), OuterError> {
+        inner_function()?; // 使用 ? 操作符将 InnerError 自动转换为 OuterError。
+        Ok(())
+    }
+
+    // 使用带有上下文的错误:
+
+    // 错误链（Error Chaining）:
+    // #[source] 属性用于指定一个错误的源错误。这允许你创建一个错误链，其中一个错误可以指向导致它的另一个错误。
+    // 与 std::error::Error trait 的集成:
+    // std::error::Error trait 有一个 source() 方法，它返回一个指向底层错误原因的引用（如果有的话）。
+    // 当你使用 #[source] 属性时，thiserror 会自动为你的错误类型实现这个方法。
+    // 错误追踪:
+    // 通过使用 #[source]，你可以创建一个可以被追踪到根本原因的错误链。这在调试和日志记录时特别有用。
+    #[derive(thiserror::Error, Debug)]
+    enum DatabaseError {
+        #[error("Failed to connect to database: {0}")]
+        ConnectionError(String),
+
+        #[error("Query failed: {query}")]
+        QueryError {
+            query: String,
+            #[source]
+            source: sqlx::Error,
+        },
+    }
+
+    async fn execute_query(query: &str) -> Result<(), DatabaseError> {
+        let pool = sqlx::Pool::connect("database_url")
+            .await
+            .map_err(|e| DatabaseError::ConnectionError(e.to_string()))?;
+
+        sqlx::query(query)
+            .execute(&pool)
+            .await
+            .map_err(|e| DatabaseError::QueryError {
+                query: query.to_string(),
+                source: e,
+            })?;
+
+        Ok(())
     }
 }
 

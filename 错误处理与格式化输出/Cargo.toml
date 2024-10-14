@@ -9,3 +9,4 @@ edition = "2021"
 sayhello_lib = { path = "E:/Doraemon/IT/Rust/study/sayhello_lib" }
 thiserror = "1.0"
 anyhow = "1.0"
+sqlx = "0.8"
