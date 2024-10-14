@@ -62,6 +62,7 @@ fn _bad_example2() {
 fn _bad_example22() {
     println!("bad example22");
     // 虽然临时变量会直接析构，但是锁的作用域依然会持续到match块的结束，
+    // 同样的, if let 和 while let 也会造成同样的问题
     match LOCK1.lock().unwrap().host.is_empty() {
         true => println!("empty"),
         false => {
