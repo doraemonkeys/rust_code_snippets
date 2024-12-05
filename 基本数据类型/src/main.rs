@@ -51,6 +51,43 @@ fn study_global_variable() {
     println!("first call foo: {:?}", foo()); // (1, 99)
     println!("second call foo: {:?}", foo()); // (2, 99)
 
+    {
+        //Rust 1.83.0 的新特性
+
+        // 在以前的版本，除了static可以初始化表达式外，禁止const上下文引用static项。
+        // 现在这一限制现已解除：
+        static S: i32 = 25;
+        const C: &i32 = &34;
+        assert_eq!(*C, 34);
+        assert_eq!(S, 25);
+
+        // 允许常量值可以指向可变或内部可变静态变量的原始指针：
+        static mut S2: i32 = 42;
+        const C2: *mut i32 = &raw mut S2;
+        unsafe {
+            assert_eq!(*C2, 42);
+        }
+
+        // 现在可以在const上下文中使用可变引用：
+        const fn inc(x: &mut i32) {
+            *x += 1;
+        }
+
+        const C3: i32 = {
+            let mut c = 41;
+            inc(&mut c); // 必须是调用const函数
+            c
+        };
+
+        // 还支持可变原始指针和内部可变性：
+        const C4: i32 = {
+            let c = std::cell::UnsafeCell::new(41);
+            unsafe { *c.get() += 1 };
+            c.into_inner()
+        };
+        assert_eq!(C3, C4);
+    }
+
     // 原子类型
     println!("-----------------原子类型-----------------");
     // 想要全局计数器、状态控制等功能，又想要线程安全的实现，原子类型是非常好的办法。
@@ -490,7 +527,6 @@ fn study_variable_binding() {
 
     // 变量与常量
     // 常量使用 const 关键字而不是 let 关键字来声明，并且值的类型必须标注。
-    // 常量不允许使用 mut 关键字。
     println!("-----------------常量-----------------");
     // Rust 常量的命名约定是全部字母都使用大写，并使用下划线分隔单词
     const MAX_POINTS: u32 = 100_000;
