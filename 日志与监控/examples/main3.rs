@@ -1,10 +1,10 @@
-use color_eyre::{eyre::eyre, Result};
+use color_eyre::{Result, eyre::eyre};
 use tracing::{error, info, instrument};
 use tracing_appender::rolling;
 use tracing_error::ErrorLayer;
 
 use tracing_subscriber::{
-    filter::EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt, Registry,
+    Registry, filter::EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt,
 };
 
 #[instrument]

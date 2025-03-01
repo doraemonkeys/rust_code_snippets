@@ -60,8 +60,8 @@ fn study_mutable_and_immutable_reference() {
     let mut _s = String::from("hello");
     let r1 = &_s; // 没问题
     let r2 = &_s; // 没问题
-                  // 无法借用可变 _s 因为它已经被借用了不可变
-                  // let r3 = &mut _s; // 大问题
+    // 无法借用可变 _s 因为它已经被借用了不可变
+    // let r3 = &mut _s; // 大问题
 
     println!("{}, {}", r1, r2);
 

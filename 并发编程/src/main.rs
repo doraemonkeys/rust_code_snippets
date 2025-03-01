@@ -242,8 +242,8 @@ fn study_memory_order() {
 fn example_atomic2() {
     println!("---------------------------原子类型---------------------------");
     // 和`Mutex`一样，`Atomic`的值具有内部可变性**，你无需将其声明为`mut`：
-    use std::sync::atomic::{AtomicU64, Ordering};
     use std::sync::Mutex;
+    use std::sync::atomic::{AtomicU64, Ordering};
 
     struct Counter {
         count: u64,
@@ -486,7 +486,7 @@ fn example_crossbeam_channel_3() {
         use std::thread;
         use std::time::{Duration, Instant};
 
-        use crossbeam_channel::{bounded, select, tick, Receiver};
+        use crossbeam_channel::{Receiver, bounded, select, tick};
         use signal_hook::consts::SIGINT;
         use signal_hook::iterator::Signals;
 
@@ -533,7 +533,7 @@ fn example_crossbeam_channel_3() {
 fn example_crossbeam_channel_2() {
     println!("---------------------------example 2 fibonacci---------------------------");
     // An asynchronous fibonacci sequence generator.
-    use crossbeam_channel::{bounded, Sender};
+    use crossbeam_channel::{Sender, bounded};
     use std::thread;
     // Sends the Fibonacci sequence into the channel until it becomes disconnected.
     fn fibonacci(sender: Sender<u64>) {
@@ -585,7 +585,7 @@ fn example_crossbeam_channel_1() {
     //     wg.Done()
     // }
 
-    use crossbeam_channel::{bounded, select, Receiver, Sender};
+    use crossbeam_channel::{Receiver, Sender, bounded, select};
 
     let people = vec!["Anna", "Bob", "Cody", "Dave", "Eva"];
     let (s, r) = bounded(1); // Make room for one unmatched send.

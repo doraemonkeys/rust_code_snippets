@@ -1,4 +1,4 @@
-use tracing::{info, Level};
+use tracing::{Level, info};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 fn main() {
     let subscriber = tracing_subscriber::FmtSubscriber::builder()

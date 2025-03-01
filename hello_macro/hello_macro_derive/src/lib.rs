@@ -77,7 +77,7 @@ DeriveInput {
 fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
     // 将结构体的名称赋予给 `name`，也就是 `name` 中会包含一个字段，它的值是字符串 "foo"。
     let name = &ast.ident;
-    let gen = quote! {
+    let gen1 = quote! {
         impl HelloMacro for #name {
             fn hello_macro() {
                 println!("Hello, Macro! My name is {}!", stringify!(#name));
@@ -89,7 +89,7 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
     // 因此还需要使用 .into 方法其转换为 TokenStream。
     // 大家注意到 #name 的使用了吗？这也是 quote! 提供的功能之一，
     // 如果想要深入了解 quote，可以看看[官方文档](https://docs.rs/quote)。
-    gen.into()
+    gen1.into()
 
     // 上面 stringify! 是 Rust 提供的内置宏，可以将一个表达式(例如 1 + 2)在编译期
     // 转换成一个字符串字面值("1 + 2")，该字面量会直接打包进编译出的二进制文件中，具有 'static 生命周期。

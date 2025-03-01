@@ -1,4 +1,4 @@
-use log::{debug, error, info, log_enabled, trace, warn, Level};
+use log::{Level, debug, error, info, log_enabled, trace, warn};
 
 pub fn shave_the_yak(yak: &mut Yak) {
     trace!("Commencing yak shaving");

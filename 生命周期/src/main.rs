@@ -177,11 +177,7 @@ where
     T: std::fmt::Display,
 {
     println!("Announcement! {}", ann);
-    if x.len() > y.len() {
-        x
-    } else {
-        y
-    }
+    if x.len() > y.len() { x } else { y }
 }
 
 // 为具有生命周期的结构体实现方法时，我们使用的语法跟泛型参数语法很相似：
@@ -251,10 +247,6 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     // 在通过函数签名指定生命周期参数时，我们并没有改变传入引用或者返回引用的真实生命周期，
     // 而是告诉编译器当不满足此约束条件时，就拒绝编译通过。
     // 因此 longest 函数并不知道 `x` 和 `y` 具体会活多久，只要知道它们的作用域至少能持续 'a 这么长就行。
-    if x.len() > y.len() {
-        x
-    } else {
-        y
-    }
+    if x.len() > y.len() { x } else { y }
     // 'a 对于单个变量来说，表示这个变量的生命周期 至少 和 'a 一样长。
 }

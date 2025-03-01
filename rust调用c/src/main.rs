@@ -1,6 +1,6 @@
 extern crate libc;
 
-extern "C" {
+unsafe extern "C" {
     fn double_input(input: libc::c_int) -> libc::c_int;
     fn third_input(input: libc::c_int) -> libc::c_int;
 }

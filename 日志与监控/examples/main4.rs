@@ -1,4 +1,4 @@
-use tracing::{info, Level};
+use tracing::{Level, info};
 
 fn main() {
     let subscriber = tracing_subscriber::FmtSubscriber::builder()

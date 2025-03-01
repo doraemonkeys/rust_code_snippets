@@ -1,4 +1,4 @@
-use mini_redis::{client, Result};
+use mini_redis::{Result, client};
 
 // 在代码中，使用了一个与众不同的 main 函数 : async fn main ，
 // 而且是用 #[tokio::main] 属性进行了标记。异步 main 函数有以下意义：

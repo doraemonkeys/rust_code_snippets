@@ -684,7 +684,7 @@ fn study_box() {
 
     // 为了解决这个问题，我们可以使用Box::from_raw。
     fn _box_example2() {
-        use std::alloc::{alloc, Layout};
+        use std::alloc::{Layout, alloc};
         // 通过数据类型构建内存布局
         let layout = Layout::new::<[u8; 512 * 2 * 1024 * 512]>();
         // 分配内存

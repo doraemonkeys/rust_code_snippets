@@ -14,7 +14,7 @@ use log;
 use log::{debug, error, info, warn};
 use serde::Deserialize;
 use serde_json;
-use tracing::{event, instrument, span, Level};
+use tracing::{Level, event, instrument, span};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 fn main() {
@@ -54,7 +54,7 @@ fn main() {
         // this event occurs inside the span.
         info!("i'm in the span!");
     } // 这里 enter 将被 drop，`my_test_span` 也随之结束
-      // this event is not inside the span.
+    // this event is not inside the span.
     info!("i'm outside the span!");
 
     println!("----------------------------event---------------------------------");

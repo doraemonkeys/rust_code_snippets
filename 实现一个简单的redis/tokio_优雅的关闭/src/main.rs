@@ -37,8 +37,8 @@ async fn main() {
     // 然后每个代码部分拿走一个发送端，当该部分结束时，就 drop 掉发送端，
     // 因此所有发送端被 drop 也就意味着所有的部分都已关闭，此时主线程的接收端就会收到错误，进而结束。
 
-    use tokio::sync::mpsc::{channel, Sender};
-    use tokio::time::{sleep, Duration};
+    use tokio::sync::mpsc::{Sender, channel};
+    use tokio::time::{Duration, sleep};
 
     async fn some_operation(i: u64, _sender: Sender<()>) {
         sleep(Duration::from_millis(100 * i)).await;

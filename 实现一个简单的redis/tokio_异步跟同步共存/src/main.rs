@@ -43,7 +43,7 @@
 mod other;
 
 use tokio::runtime::Builder;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 fn main() {
     let runtime = Builder::new_multi_thread()

@@ -1,7 +1,7 @@
 [package]
 name = "rust-to-c"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 #  Cargo 会先编译和执行该构建脚本，然后再去构建整个项目。
 build = "build.rs"
 

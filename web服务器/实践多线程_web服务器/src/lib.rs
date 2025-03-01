@@ -1,4 +1,4 @@
-use std::sync::{mpsc, Arc, Mutex};
+use std::sync::{Arc, Mutex, mpsc};
 
 pub struct ThreadPool {
     workers: Vec<Option<Worker>>,
@@ -13,16 +13,18 @@ struct Worker {
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-        let thread = std::thread::spawn(move || loop {
-            let message = receiver.lock().unwrap().recv();
-            if message.is_err() {
-                println!("Worker {id} disconnected; shutting down.");
-                break;
-            }
-            let job = message.unwrap();
-            println!("Worker {id} got a job; executing.");
+        let thread = std::thread::spawn(move || {
+            loop {
+                let message = receiver.lock().unwrap().recv();
+                if message.is_err() {
+                    println!("Worker {id} disconnected; shutting down.");
+                    break;
+                }
+                let job = message.unwrap();
+                println!("Worker {id} got a job; executing.");
 
-            job();
+                job();
+            }
         });
 
         Worker { id, thread }

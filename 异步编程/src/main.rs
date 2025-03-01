@@ -1144,11 +1144,11 @@ fn example_study_async_2() {
     use {
         futures::{
             future::{BoxFuture, FutureExt},
-            task::{waker_ref, ArcWake},
+            task::{ArcWake, waker_ref},
         },
         std::{
             future::Future,
-            sync::mpsc::{sync_channel, Receiver, SyncSender},
+            sync::mpsc::{Receiver, SyncSender, sync_channel},
             sync::{Arc, Mutex},
             task::Context,
             time::Duration,

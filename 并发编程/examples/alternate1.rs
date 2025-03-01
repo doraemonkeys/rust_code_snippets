@@ -1,4 +1,4 @@
-use std::sync::{mpsc, Mutex};
+use std::sync::{Mutex, mpsc};
 
 fn worker(sender: mpsc::SyncSender<i32>, receiver: &Mutex<mpsc::Receiver<i32>>, id: i32) {
     loop {

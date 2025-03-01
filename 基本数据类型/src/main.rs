@@ -180,7 +180,15 @@ fn study_global_variable() {
             // 然后将其变为`'static`生命周期，最终该变量将和程序活得一样久，因此可以赋值给全局静态变量`CONFIG`。
             // 将`c`从内存中泄漏，变成`'static`生命周期
             CONFIG = Some(Box::leak(c));
-            println!("{:?}", CONFIG);
+            println!("{:?}", &raw const CONFIG);
+            /*
+                  |
+              183 |             println!("{:?}", CONFIG);
+                  |                              ^^^^^^ shared reference to mutable static
+                  |
+                  = note: for more information, see <https://doc.rust-lang.org/nightly/edition-guide/rust-2024/static-mut-references.html>
+                  = note: shared references to mutable statics are dangerous; it's undefined behavior if the static is mutated or if a mutable reference is created for it while the shared reference lives
+            */
         }
     }
     test_no_lazy();
@@ -188,7 +196,7 @@ fn study_global_variable() {
         REQUEST_RECV += 1;
         // Rust 要求必须使用unsafe语句块才能访问和修改static变量，因为这种使用方式往往并不安全，
         // 其实编译器是对的，当在多线程中同时去修改时，会不可避免的遇到脏数据
-        assert_eq!(REQUEST_RECV, 1);
+        assert_eq!(*(&raw const REQUEST_RECV), 1);
     }
 
     for _ in 0..100 {
@@ -213,7 +221,7 @@ fn study_global_variable() {
     }
     unsafe {
         CONFIG = init();
-        println!("{:?}", CONFIG)
+        println!("{:?}", &raw const CONFIG);
     }
 
     // 标准库中的 OnceCell
@@ -424,7 +432,7 @@ fn study_basic_data_types() {
     let aa: u8 = 255;
     let bb: u8 = aa.wrapping_add(1);
     println!("aa = {}, bb = {}", aa, bb); //aa = 255, bb = 0
-                                          // 浮点陷阱
+    // 浮点陷阱
     println!("-----------------浮点陷阱-----------------");
     study_float_traps();
     //NaN

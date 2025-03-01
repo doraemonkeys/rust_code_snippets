@@ -3,8 +3,8 @@ mod generic;
 mod inheritance;
 mod operator_overloading;
 mod polymorphism;
-mod trait_study;
 mod rust_type;
+mod trait_study;
 fn main() {
     // 方法
     study_method();

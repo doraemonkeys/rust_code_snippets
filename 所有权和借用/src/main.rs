@@ -83,12 +83,12 @@ fn study_ownership() {
     println!("--------------------再识所有权---------------------");
     let s = String::from("hello"); // s 进入作用域
     takes_ownership(s); // s 的值移动到函数里 ...
-                        // ... 所以到这里不再有效
-                        //println!("s = {}", s); // error: value borrowed here after move
+    // ... 所以到这里不再有效
+    //println!("s = {}", s); // error: value borrowed here after move
 
     let x = 5; // x 进入作用域
     makes_copy(x); // x 应该移动函数里，
-                   // 但 i32 是 Copy 的，所以在后面可继续使用 x
+    // 但 i32 是 Copy 的，所以在后面可继续使用 x
 
     // 函数结束后 x 先移出了作用域，然后是 s。但因为 s 的值已被移走，所以不会有特殊操作
 }
