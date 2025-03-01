@@ -2,8 +2,79 @@
 async fn main() {
     study_hello_tokio().await;
 
+    joinhandle_abort().await;
+
     // Tokio 中的 I/O 操作
     study_tokio_io().await;
+}
+
+async fn joinhandle_abort() {
+    // 可以使用 joinhandle.abort（）停止正在运行的任务。这向任务发出关闭的信号。任务实际上会在下一个.await点停止（如果已经放弃，则会尽快停止）。这不是立即强制终止。
+
+    // 在终止后等待JoinHandle通常会导致JoinError，表示取消，但如果任务在取消生效之前正常完成，则会得到正常结果。
+    // AbortHandle类似于JoinHandle，但是您可以为单个任务拥有多个AbortHandle，并且它不允许您等待任务的结果,它纯粹是用来发送中止信号的。
+    // 重要提示：`spawn_blocking` tasks一旦开始就不能用abort（）取消。只有在阻塞任务实际开始执行之前调用abort才会起作用。
+
+    let handle = tokio::spawn(async { "hello" });
+    handle.abort();
+    let result = handle.await;
+    println!("result: {:?}", result);
+
+    // 对于本质上是阻塞的操作（如与同步库交互）使用此方法。它在专门为阻塞操作设计的单独线程池上运行提供的闭包（不是异步块）。这可以防止阻塞代码干扰其他非阻塞任务。
+    let join_handle = tokio::task::spawn_blocking(|| {
+        // Simulate a blocking operation (e.g., reading a large file)
+        std::thread::sleep(std::time::Duration::from_secs(2));
+        "Result from blocking operation"
+    });
+
+    let result = join_handle.await.unwrap();
+    println!("Blocking result: {}", result);
+
+    // task::block_in_place:
+    // 这是针对多线程Tokio运行时的优化。它允许您运行阻塞操作，但不是生成新线程，而是将当前工作线程临时转换为阻塞线程。
+    // 它将该线程上的任何其他任务移动到另一个工作线程。这样可以更快，因为它避免了创建新线程的开销。
+    let result = tokio::task::block_in_place(|| {
+        // Short blocking operation
+        "Result from block_in_place"
+    });
+
+    println!("Result: {}", result);
+
+    // 即使在异步代码调用的非异步函数中，您仍然需要小心阻塞。析构函数（对象被删除时运行的代码）是阻塞操作可能潜入的常见地方。
+
+    // task::yield_now()
+    // 在异步代码中，您可能需要让出当前线程的执行权，以便其他任务有机会运行。
+    // 您可以使用 task::yield_now() 来实现这一点。
+    // This is like saying, "Okay, Tokio, I'm done with my turn for now. Let someone else run." It explicitly gives control back to the scheduler.
+    async fn my_task() {
+        for i in 0..1000 {
+            // Do some work...
+
+            // Yield occasionally to avoid hogging the thread
+            if i % 100 == 0 {
+                tokio::task::yield_now().await;
+            }
+        }
+    }
+
+    // Tokio自动在某些地方插入yield点（比如在它自己的一些库函数中），以防止单个任务垄断执行器。这有助于确保公平。
+    // task::unconstrained：这是一个“逃生舱口”。
+    // 如果你真的需要一个不被Tokio强迫屈服的Future，你可以用“unconstrained”来包裹它。
+    // 使用这个要非常小心！这通常是一个信号，表明您应该重构代码，使其更具异步性。
+
+    let fut = async {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+
+        for _ in 0..1000 {
+            let _ = tx.send(());
+            rx.recv().await; // Normally, this would yield periodically
+        }
+    };
+
+    // 使用 unconstrained 包裹 future 以防止自动 yield
+    let _unconstrained_fut = tokio::task::unconstrained(fut);
+
+    // 运行 unconstrained future
 }
 
 async fn study_tokio_io() {

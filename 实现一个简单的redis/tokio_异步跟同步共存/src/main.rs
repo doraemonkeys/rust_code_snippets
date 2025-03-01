@@ -21,6 +21,18 @@
     }
 
     注意到上面的 `block_on` 方法了嘛？在我们自己的同步代码中，可以使用它开启一个 `async/await` 世界。
+
+*/
+
+/*
+    You should not use `block_on` frequently within your asynchronous code itself.
+    Use `tokio::spawn` to create new asynchronous tasks.
+
+    Nested block_on:
+    不能在另一个异步函数或另一个block_on调用中调用block_on。这将导致deadlock （block_on将尝试阻止外部异步上下文所依赖的线程）。Tokio检测到这一点和恐慌。
+
+   避免嵌套 block_on: 无论使用哪种运行时，都 绝对不要 在一个 async 函数内部或另一个 block_on 调用内部调用 block_on。这会导致死锁。
+   block_on 用于顶层: block_on 主要用于程序的顶层（例如，在 main 函数中）来启动异步任务。在异步代码中，应该使用 tokio::spawn 来创建新的任务，而不是 block_on。
 */
 
 // 本章节的目标很纯粹：如何在同步代码中使用一小部分异步代码。

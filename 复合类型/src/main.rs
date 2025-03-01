@@ -229,6 +229,11 @@ fn study_string() {
     let s = "hello";
     let bytes = s.to_string().into_bytes();
     println!("{:?}", bytes);
+
+    println!("-----------------String -> Rc<str>-----------------");
+    let s = String::from("hello");
+    let rc_str: std::rc::Rc<str> = std::rc::Rc::from(s);
+    println!("{}", rc_str);
 }
 
 fn say_hello(s: &str) {

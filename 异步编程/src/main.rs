@@ -1268,10 +1268,13 @@ fn example_study_async_2() {
     // 但是这个只能解决 async 内部的问题，那么这些最外层的 async 函数，谁来推动它们运行呢？
     // 答案就是我们之前多次提到的执行器 executor (例如上一章节中的block_on函数) 。
 
-    // 执行器会管理一批 Future (最外层的 async 函数)，然后通过不停地 poll 推动它们直到完成。
-    // 最开始，执行器会先 poll 一次 Future ，后面就不会主动去 poll 了，
-    // 而是等待 Future 通过调用 wake 函数来通知它可以继续，
-    // 它才会继续去 poll 。这种 wake 通知然后 poll 的方式会不断重复，直到 Future 完成。
+    /*
+        async函数本质上就是返回了一个 Future trait 对象，执行器可以通过poll的方式来推动其运行。
+        执行器会管理一批 Future (最外层的 async 函数)，然后通过不停地 poll 推动它们直到完成。
+        最开始，执行器会先 poll 一次 Future ，后面就不会主动去 poll 了，
+        而是等待 Future 通过调用 wake 函数来通知它可以继续，
+        它才会继续去 poll 。这种 wake 通知然后 poll 的方式会不断重复，直到 Future 完成。
+    */
 
     // - 在 Rust 中，async 是惰性的，直到执行器 poll 它们时，才会开始执行
     // - Waker 是 Future 被执行的关键，它可以链接起 Future 任务和执行器

@@ -12,6 +12,8 @@ edition = "2021"
 pretty_assertions = "1"
 criterion = "0.3"
 
+
+# cargo bench 命令会自动运行 benchmarks 目录下的所有基准测试
 [[bench]]
 name = "my_benchmark"
 harness = false
