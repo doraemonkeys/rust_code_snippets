@@ -73,7 +73,7 @@ fn study_ffi() {
     // 下面的例子演示了如何调用 C 标准库中的 `abs` 函数：
     // 要调用外部 C 函数（标准库、系统调用等），可以使用 libc crate，它包含了 C 标准库中的类型别名和函数定义。
     // 当然也可以自己声明外部 C 函数，而 Rust 默认会链接 libc 和 libm：
-    extern "C" {
+    unsafe extern "C" {
         // "C" 表示这些外部函数遵循 C 语言 ABI，ABI 规定了在汇编层如何调用这些函数。
         // 在 extern "C" 代码块中，我们列出了想要调用的外部函数的签名。
         // 其中 "C" 定义了外部函数所使用的应用二进制接口ABI (Application Binary Interface)：

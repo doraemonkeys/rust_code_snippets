@@ -12,12 +12,12 @@
 
 #![crate_type = "staticlib"] // 指定rustc编译成什么库类型，这里指定为静态库类型。
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn double_input(input: i32) -> i32 {
     input * 2
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn third_input(input: i32) -> i32 {
     input * 3
 }

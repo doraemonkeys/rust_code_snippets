@@ -2,6 +2,10 @@ use std::sync::{Arc, Mutex};
 use tokio::task;
 
 /*
+https://users.rust-lang.org/t/how-to-handle-deterministic-but-not-static-lifetime-in-tokio/112089/3
+https://github.com/tokio-rs/tokio/issues/3162#issuecomment-2134405903
+
+
  tokio::spawn 要求闭包是 'static 的，这意味着闭包不能借用任何生命周期短于 'static 的数据。
  这是因为 spawned 任务可能会在创建它的函数返回后继续执行，因此任何非 'static 的引用都可能变得无效。
 
@@ -13,7 +17,9 @@ use tokio::task;
 
 2. 在tokio外开一个新线程，使用thread::scope
 
-3. 使用tokio::task::unconstrained
+3. 使用tokio::task::unconstrained，放弃异步阻塞当前线程直到任务完成
+
+4. clone
 */
 
 #[tokio::main]

@@ -6,12 +6,15 @@ use std::{fmt::Display, sync::Mutex};
 struct Config {
     host: String,
     port: u32,
+    name: &'static str,
 }
+
+const NAME: &'static str = "name";
 
 #[allow(dead_code)]
 impl Config {
     fn get_static_str(&self) -> &'static str {
-        "static_str"
+        self.name
     }
     fn get_host_ref(&self) -> &String {
         &self.host
@@ -22,6 +25,7 @@ lazy_static! {
     static ref LOCK1: Mutex<Config> = Mutex::new(Config {
         host: String::from("host"),
         port: 1234,
+        name: NAME,
     });
 }
 
@@ -107,6 +111,7 @@ fn _foo<T1: Display, T2: Display>(s: T1, s2: T2) -> Config {
     Config {
         host: String::from("host"),
         port: 1234,
+        name: NAME,
     }
 }
 

@@ -59,7 +59,7 @@ async fn joinhandle_abort() {
 
     // Tokio自动在某些地方插入yield点（比如在它自己的一些库函数中），以防止单个任务垄断执行器。这有助于确保公平。
     // task::unconstrained：这是一个“逃生舱口”。
-    // 如果你真的需要一个不被Tokio强迫屈服的Future，你可以用“unconstrained”来包裹它。
+    // 如果你真的需要一个不被Tokio强迫yield的Future，你可以用“unconstrained”来包裹它。
     // 使用这个要非常小心！这通常是一个信号，表明您应该重构代码，使其更具异步性。
 
     let fut = async {
@@ -68,13 +68,14 @@ async fn joinhandle_abort() {
         for _ in 0..1000 {
             let _ = tx.send(());
             rx.recv().await; // Normally, this would yield periodically
+
+            // unconstrained 似乎并不是在所有.await点都不会yield，
+            // 使用 yield_now().await 或者 sleep 或者 Poll 返回了 Pending 依然可以交出执行权，为什么？
         }
     };
-
-    // 使用 unconstrained 包裹 future 以防止自动 yield
+    //与spawn不同， 如果unconstrained future 不.await 使用它，则任务不会运行
     let _unconstrained_fut = tokio::task::unconstrained(fut);
-
-    // 运行 unconstrained future
+    // _unconstrained_fut.await; // .await 会一直阻塞，直到unconstrained任务完成
 }
 
 async fn study_tokio_io() {
