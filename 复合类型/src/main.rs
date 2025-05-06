@@ -230,6 +230,16 @@ fn study_string() {
     let bytes = s.to_string().into_bytes();
     println!("{:?}", bytes);
 
+    println!("-----------------&[u8] -> &str-----------------");
+    // 1. 使用 from_utf8() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = std::str::from_utf8(&bytes).unwrap();
+    println!("{}", s);
+    // 2. 使用 from_utf8_unchecked() 函数
+    let bytes = [104u8, 101, 108, 108, 111];
+    let s = unsafe { std::str::from_utf8_unchecked(&bytes) };
+    println!("{}", s);
+
     println!("-----------------String -> Rc<str>-----------------");
     let s = String::from("hello");
     let rc_str: std::rc::Rc<str> = std::rc::Rc::from(s);
