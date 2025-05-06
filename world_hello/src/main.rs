@@ -5,9 +5,9 @@ fn greet_world() {
     // let english = "World, hello";
     let english = "World, hello";
 
-    // 和其它语言不同，Rust 的集合类型不能直接进行循环，需要变成迭代器（这里是通过 `.iter()` 方法），才能用于迭代循环
+    // Rust为数组实现了IntoIterator trait，我们可以直接对一个数组进行迭代
     let regions = [southern_germany, chinese, english];
-    for region in regions.iter() {
+    for region in regions {
         // !是一个格式化宏，用于格式化字符串
         // 对于 `println` 来说，我们没有使用其它语言惯用的 `%s`、`%d` 来做输出占位符，而是使用 `{}`，
         // 因为 Rust 在底层帮我们做了大量工作，会自动识别输出数据的类型
