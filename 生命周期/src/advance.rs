@@ -10,7 +10,9 @@ pub fn stuidy_lifetime_advance() {
 
     use_list(&list);
 
-    println!("------------------高阶特征约束(Higher-ranked trait bounds)-----------------");
+    println!(
+        "------------------高阶特征约束 高阶生命周期约束(Higher-ranked trait bounds)-----------------"
+    );
 
     higher_ranked_lifetime_bounds();
 }
@@ -37,6 +39,11 @@ fn higher_ranked_lifetime_bounds() {
     // 这允许我们在函数内部创建一个临时值（zero），取它的引用，并将这个短生命周期的引用传递给 F，而不会有任何生命周期冲突。
 
     call_on_ref_zero(|a: &i32| println!("{:?}", a));
+
+    // 实例：
+    // for<'de> Deserialize<'de> 是一个高阶生命周期约束 (Higher-Rank Trait Bound, HRTB)。
+    // 它表示：“对于 任何 生命周期 'de，T 都能实现 Deserialize<'de>”。
+    // 这正是 serde 反序列化函数所期望的——它能从任何生命周期的输入数据中反序列化出 T。
 }
 
 // 生命周期存在的意义是保证不会出现空引用(悬垂引用)，
