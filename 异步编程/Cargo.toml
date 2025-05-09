@@ -11,3 +11,4 @@ rand = "0.8.5"
 tokio = { version = "0.2", features = ["full"] }
 timer_future = { path = "E:/Doraemon/IT/Rust/study/timer_future" }
 pin-utils = "0.1.0"
+async-trait = "0.1"

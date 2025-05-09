@@ -3773,6 +3773,7 @@ dependencies = [
 name = "异步编程"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "futures",
  "pin-utils",
  "rand",

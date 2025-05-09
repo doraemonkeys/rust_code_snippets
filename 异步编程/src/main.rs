@@ -14,9 +14,117 @@ fn main() {
     // 使用 join! 和 select! 同时运行多个 Future
     study_join_and_select();
 
+    // async trait
+    study_async_trait();
+
     // 一些疑难问题的解决办法
     study_difficulties();
 }
+
+#[allow(unused)]
+fn study_async_trait() {
+    println!("------------------study_async_trait------------------");
+
+    // 一个trait在它包括泛型时不具有 dyn compatibility  Dyn 兼容性 (之前的概念是 dyn safe)。参考如下例子：
+    use std::fmt::Display;
+
+    trait PrintPrefixed {
+        fn prefix(&self) -> String;
+        fn apply<T: Display>(&self, t: T);
+    }
+
+    impl PrintPrefixed for String {
+        fn prefix(&self) -> String {
+            self.clone()
+        }
+        fn apply<T: Display>(&self, t: T) {
+            println!("{}: {}", self, t);
+        }
+    }
+
+    /*
+       trait不是类型，dyn trait是?sized类型，dyn compatible的trait只能用指针(引用)间接使用它或者分配到堆上。
+
+       对于prefix，使用dyn trait时，vtable可以建立String与PrintPrefixed的关联，但是使用apply时，关联将无法被建立，
+       因为实现了Display这一trait的具体类型是什么仍是未知的。
+
+       虽然trait可以同时包含dyn compatible和非dyn compatible的方法，
+       在目前版本的Rust中，只要有一个方法不是dyn compatible，那么整个trait就不是dyn compatible，因为trait无法拆分方法来实现。
+
+        fn example_dyn_safe_trait(p: &dyn PrintPrefixed) {
+            p.apply(1);
+        }
+
+        84 |     fn example_dyn_safe_trait(p: &dyn PrintPrefixed) {
+           |                                   ^^^^^^^^^^^^^^^^^ `PrintPrefixed` is not dyn compatible
+
+        100 |     fn example_dyn_safe_trait(p: Box<dyn PrintPrefixed>) {
+            |                                      ^^^^^^^^^^^^^^^^^ `PrintPrefixed` is not dyn compatible
+    */
+
+    // 这个trait不涉及其他的泛型，因此它是dyn compatible的。但是在实际使用时，必须声明Item的类型
+    trait Iterator {
+        type Item;
+
+        fn next(&mut self) -> Option<Self::Item>;
+    }
+
+    trait Iterator2 {
+        // 这个trait涉及了泛型，因此它不是dyn compatible的。
+        fn next<T>(&mut self) -> Option<T>;
+    }
+
+    fn example_dyn_safe_trait2(i: &mut dyn Iterator<Item = i32>) {
+        println!("{:?}", i.next());
+    }
+
+    // trait中含有async fn时，该trait不具有dyn compatibility。因为async fn是一个语法糖，具有隐藏的 Future 类型。
+    trait AsyncRead1 {
+        async fn read(&mut self, buf: &mut [u8]) -> io::Result<usize>;
+    }
+
+    /*
+       124 |     fn example_dyn_safe_trait3(r: &mut dyn AsyncRead) {}
+           |                                        ^^^^^^^^^^^^^ `dyn_safe_trait::AsyncRead` is not dyn compatible
+    */
+
+    // AsyncRead desugars to:
+    trait AsyncRead11 {
+        type ReadFuture: Future<Output = io::Result<usize>>;
+        fn read(&mut self, buf: &mut [u8]) -> Self::ReadFuture;
+    }
+    // 这是合法的，因为ReadFuture被显式声明为关联类型
+    fn example_dyn_safe_trait3(
+        _: &mut dyn AsyncRead11<ReadFuture = impl Future<Output = io::Result<usize>>>,
+    ) {
+    }
+
+    /*
+       不论繁琐以及是否可能，关联类型使dyn trait限制于某一个特定的impl块，
+       而这与dyn trait的设计意图冲突：在使用dyn时，用户并不知道实际上的类型是什么，只知道类型实现了目标trait。
+       出于这个原因，一个使用#[async_trait]的改进方式如下：
+    */
+    use async_trait::async_trait;
+    #[async_trait]
+    // to state whether Box<...> is send or not if desired: #[async_future(?Send)]
+    trait AsyncRead2 {
+        async fn read(&mut self, buf: &mut [u8]) -> io::Result<usize>;
+    }
+
+    // desugars to
+    trait AsyncRead22 {
+        fn read(
+            &mut self,
+            buf: &mut [u8],
+        ) -> Box<dyn Future<Output = io::Result<usize>> + Send + '_>;
+    }
+    // 这样子做可以通过编译，缺点在于，哪怕不使用dyn trait，Future也会强制分配在堆上，
+    // 以及用户必须提早声明Box<...>是否实现了Sendtrait。
+    fn example_dyn_safe_trait4(_: &mut dyn AsyncRead2) {}
+    fn example_dyn_safe_trait5(_: &mut dyn AsyncRead22) {}
+}
+
+use std::io;
 
 fn study_difficulties() {
     println!("------------------study_difficulties------------------");

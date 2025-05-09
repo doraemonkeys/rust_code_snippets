@@ -50,6 +50,14 @@ fn multi_dog_sound(x: Vec<&impl Sound>) {
     }
 }
 
+// Vec<&impl Sound> 等价于 泛型函数 <T: ?Sized + Sound>
+fn multi_dog_sound2<T: ?Sized + Sound>(x: Vec<&T>) {
+    println!("many dogs sound: ");
+    for i in x {
+        println!("{}", i.sound());
+    }
+}
+
 fn multi_animal_sound(x: Vec<Box<dyn Sound>>) {
     println!("many animals sound: ");
     for i in x {
@@ -82,7 +90,8 @@ pub fn study_polymorphism() {
     // 多条狗的声音(同一类型，使用静态分发)
     println!("----------------多条狗的声音(同一类型，使用静态分发)----------------");
     let dogs = vec![&dog, &dog2, &dog3];
-    multi_dog_sound(dogs);
+    multi_dog_sound(dogs.clone());
+    multi_dog_sound2(dogs);
 
     // vector中的元素类型不一致，无法使用静态分发
     // let animals = vec![&cat, &dog, &pig];
