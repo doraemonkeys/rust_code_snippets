@@ -15,6 +15,30 @@ pub fn stuidy_lifetime_advance() {
     );
 
     higher_ranked_lifetime_bounds();
+
+    evil_lifetime();
+}
+
+fn evil_lifetime() {
+    // Rust 的生命周期检查，至今是 unsound 的。
+    // 这个函数竟然可以将任意的生命周期 'a，转换为 'static 生命周期
+    pub fn _make_static<'a, T>(input: &'a T) -> &'static T {
+        fn helper<'a, T>(_: [&'static &'a (); 0], v: &'a T) -> &'static T {
+            v
+        }
+
+        let f: fn([&'static &(); 0], &T) -> &'static T = helper;
+
+        f([], input)
+    }
+
+    fn _main() {
+        let vec = vec![0; 1 << 20];
+        let evil = _make_static(&vec);
+
+        drop(vec);
+        println!("{:?}", evil);
+    }
 }
 
 fn higher_ranked_lifetime_bounds() {
