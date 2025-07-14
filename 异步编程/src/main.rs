@@ -43,7 +43,7 @@ fn study_async_trait() {
     }
 
     /*
-       trait不是类型，dyn trait是?sized类型，dyn compatible的trait只能用指针(引用)间接使用它或者分配到堆上。
+       trait不是具体类型，dyn trait是满足?sized，dyn compatible的trait只能用指针(引用)间接使用它或者分配到堆上。
 
        对于prefix，使用dyn trait时，vtable可以建立String与PrintPrefixed的关联，但是使用apply时，关联将无法被建立，
        因为实现了Display这一trait的具体类型是什么仍是未知的。

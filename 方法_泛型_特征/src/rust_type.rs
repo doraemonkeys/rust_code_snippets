@@ -14,13 +14,98 @@ pub fn study_rust_type() {
 
 fn study_any() {
     println!("--------------------Any--------------------");
-    // This module implements the Any trait, which enables dynamic typing
-    // of any 'static type through runtime reflection
-    // Any Trait，它允许 'static 类型通过运行时反射，实现动态类型。
-    // 所谓 Runtime Reflection，就是在运行的时候，可以判断和操作一个对象、变量等的信息，
-    // 不需要在编译期知道对象的信息。
+    use std::any::Any;
 
-    // TODO: 未完待续
+    /*
+      在 Rust 中，可以将一个 trait object（如 &dyn Trait 或 Box<dyn Trait>）恢复（或称为“向下转型”，Downcasting）到它原来的具体类型。
+
+      当你将一个具体类型（如 struct Circle）转换为 trait object（如 Box<dyn Drawable>）时，编译器会进行“类型擦除”（Type Erasure）。
+      这意味着编译器“忘记”了它原本是 Circle，只知道它是一个实现了 Drawable trait 的东西。
+
+      要恢复原始类型，可以使用 std::any::Any Trait
+    */
+
+    trait Drawable: Any {
+        fn draw(&self);
+
+        // 为了方便，可以提供一个 as_any 方法
+        fn as_any(&self) -> &dyn Any;
+    }
+
+    struct Circle {
+        radius: f64,
+    }
+
+    impl Drawable for Circle {
+        fn draw(&self) {
+            println!("Drawing a circle with radius {}", self.radius);
+        }
+
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+    }
+
+    struct Square {
+        side: f64,
+    }
+
+    impl Drawable for Square {
+        fn draw(&self) {
+            println!("Drawing a square with side {}", self.side);
+        }
+
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+    }
+
+    // 创建一个包含不同形状的 trait object vector
+    let shapes: Vec<Box<dyn Drawable>> = vec![
+        Box::new(Circle { radius: 10.0 }),
+        Box::new(Square { side: 5.0 }),
+        Box::new(Circle { radius: 2.0 }),
+    ];
+
+    for shape in shapes.iter() {
+        shape.draw();
+
+        // 2. 尝试向下转型
+        // 使用 as_any() 获取 &dyn Any，然后调用 downcast_ref
+        if let Some(circle) = shape.as_any().downcast_ref::<Circle>() {
+            // 转型成功！现在可以访问 Circle 的特有字段
+            println!("  -> Found a circle! Its radius is {}.", circle.radius);
+        } else if let Some(square) = shape.as_any().downcast_ref::<Square>() {
+            // 转型成功！
+            println!("  -> Found a square! Its side is {}.", square.side);
+        } else {
+            println!("  -> Found some other shape.");
+        }
+    }
+
+    // 对于 Box<dyn Trait>，可以直接使用 Box::downcast
+    let boxed_shape: Box<dyn Drawable> = Box::new(Circle { radius: 7.0 });
+    match <Box<dyn Any + 'static>>::downcast::<Circle>(boxed_shape) {
+        Ok(circle_box) => {
+            println!("Successfully downcasted Box! Radius: {}", circle_box.radius);
+        }
+        Err(_) => {
+            println!("Failed to downcast Box.");
+        }
+    }
+
+    // 为了使用 Box::downcast，需要先将 Box<dyn Drawable> 变为 Box<dyn Any>
+    // 如果 Drawable 继承了 Any, 那么 Box<dyn Drawable> 可以被看作是 Box<dyn Any> 的一种形式，但需要显式转换
+    // 最简单的方式是直接处理 Box 本身
+    let boxed_any: Box<dyn Any> = Box::new(Circle { radius: 7.0 }); // 假设我们有一个 Box<dyn Any>
+    match boxed_any.downcast::<Circle>() {
+        Ok(circle_box) => {
+            println!("Successfully downcasted Box! Radius: {}", circle_box.radius);
+        }
+        Err(_) => {
+            println!("Failed to downcast Box.");
+        }
+    }
 }
 
 fn study_sized_and_dst() {
@@ -42,7 +127,7 @@ fn study_sized_and_dst() {
     // - 特征对象(列如 Box<dyn Trait>、&dyn Trait)，只能通过引用或 `Box` 的方式来使用特征对象，直接使用将报错！
     //   函数能直接传递特征对象，是因为编译期做了类型推导，本质上是泛型的语法糖，
     //   而如果要返回多种不同类型的特征对象，就需要使用 `Box<dyn Trait>`或 引用。
-    //   trait不是类型，dyn trait是?sized类型，只能用指针(引用)间接使用它。
+    //   trait不是具体类型，dyn trait是满足?sized，只能用指针(引用)间接使用它。
     // - 切片(列如 str、[i32] , 其实str、[i32]是切片，&str、&[i32]是切片的引用，
     //   由于切片在编译时不能确定大小导致报错，所以一般使用切片的引用)
     // error
@@ -102,16 +187,8 @@ fn study_sized_and_dst() {
         std::mem::size_of_val(&y)  // 8 byte
     );
 
-    // 使用 `Box` 可以将一个动态大小的特征变成一个具有固定大小的特征对象，
-    // 能否故技重施，将 `str` 封装成一个固定大小类型？
-    // 答案是不可以！
     // the size for values of type `str` cannot be known at compilation time.
     // let s1: Box<str> = Box::new("Hello there!" as str);
-    // `Box<str>` 使用了一个引用来指向 `str`，引用本身就是一个固定大小的类型，但是
-    //  Box` 中有该 `str` 的长度信息吗？显然是 `No`。
-    // 那为什么特征就可以变成特征对象？其实这个还蛮复杂的，简单来说，
-    // 对于特征对象，编译器无需知道它具体是什么类型，只要知道它能调用哪几个方法即可，
-    // 因此编译器帮我们实现了剩下的一切。
 
     // 主动转换成 `str` 的方式不可行，但是可以让编译器来帮我们完成，只要告诉它我们需要的类型即可。
     let s1: Box<str> = "Hello there!".into();
