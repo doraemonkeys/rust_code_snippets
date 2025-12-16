@@ -678,6 +678,7 @@ fn study_box() {
         //  overflowed its stack
         let _v = Box::new([255u8; 512 * 2 * 1024 * 512]);
     }
+    // _box_example();
     // 上面的例子在debug模式中，数组会先在栈中创建，再传递给Box复制到堆中，但是占用内存太大，会报栈溢出的错误。
     // release模式下会开启优化，直接在堆上创建，不会报错。
     // 实际开发中我们会直接使用vector来创建堆上的数组。
@@ -695,7 +696,32 @@ fn study_box() {
         }
         // 通过 Box::from_raw引用后，不用再使用 dealloc 方法手动释放内存。
     }
-    _box_example();
+    // _box_example();
+
+    // 零初始化智能指针
+    fn _zeroed_example() {
+        /*
+        简单来说，MaybeUninit::zeroed() 是用来分配一块内存，并把这块内存里的每一个字节都填成 0。
+        它只保证内存里的比特位（bits）全是 0，不保证这对类型 T 来说是合法的初始化状态。
+        你需要自己判断“全 0 的比特位”对于类型 T 来说是否有效。
+        如果结构体 T 中包含填充字节（padding，为了内存对齐而留出的空隙），虽然 zeroed() 会把它们设为 0，
+        但当这个值被返回或传递时，编译器不保证这些填充字节依然是 0。编译器可能会在复制结构体时忽略或覆盖填充字节。
+
+        MaybeUninit<T> 只是一个内存包装器，它不会自动调用 T 的析构函数（Drop trait）。
+        如果你用 zeroed() 初始化了一个需要 Drop 的类型（比如包含 Vec 或 String 的结构体），且成功初始化了它，你需要负责确保它最终被释放，否则会造成内存泄漏。
+         */
+
+        // 固定大小数组：直接在堆上分配并零初始化
+        // u8数组为零初始化，所以这里调用 assume_init() 是安全的。
+        let big_array: Box<[u8; 512 * 2 * 1024 * 512]> = unsafe { Box::new_zeroed().assume_init() };
+        println!("数组长度: {}", big_array.len());
+
+        // 动态大小切片
+        let dynamic_array: Box<[u8]> =
+            unsafe { Box::new_zeroed_slice(512 * 2 * 1024 * 512).assume_init() };
+        println!("切片长度: {}", dynamic_array.len());
+    }
+    _zeroed_example();
 
     // 将动态大小类型变为 Sized 固定大小类型
     println!("--------------------将动态大小类型变为 Sized 固定大小类型--------------------");

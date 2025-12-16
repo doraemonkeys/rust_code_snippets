@@ -210,7 +210,7 @@ fn study_type_alias() {
 
 fn study_newtype() {
     println!("--------------------newtype--------------------");
-    // newtype
+    // 元组结构体 (Tuple Struct) 与 新类型模式 (Newtype Pattern)
     // 何为 newtype？简单来说，就是使用元组结构体的方式将已有的类型包裹起来：`struct Meters(u32);`，
     // 那么此处 `Meters` 就是一个 `newtype`。
     // 自定义类型可以让我们给出更有意义和可读性的类型名，

@@ -1,5 +1,5 @@
 [package]
-name = "方法_泛型_特征"
+name = "method_generic_trait"
 version = "0.1.0"
 edition = "2024"
 

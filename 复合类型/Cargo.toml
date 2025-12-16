@@ -1,5 +1,5 @@
 [package]
-name = "复合类型"
+name = "compound_types"
 version = "0.1.0"
 edition = "2024"
 

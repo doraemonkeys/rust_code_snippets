@@ -506,6 +506,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "compound_types"
+version = "0.1.0"
+
+[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1436,6 +1440,10 @@ name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
+
+[[package]]
+name = "method_generic_trait"
+version = "0.1.0"
 
 [[package]]
 name = "mini-redis"
@@ -3731,10 +3739,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "复合类型"
-version = "0.1.0"
-
-[[package]]
 name = "宏编程"
 version = "0.1.0"
 dependencies = [
@@ -3802,10 +3806,6 @@ version = "0.1.0"
 
 [[package]]
 name = "文件操作"
-version = "0.1.0"
-
-[[package]]
-name = "方法_泛型_特征"
 version = "0.1.0"
 
 [[package]]

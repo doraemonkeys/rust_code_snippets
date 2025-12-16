@@ -60,11 +60,17 @@ pub fn study_struct() {
     // 元组结构体(Tuple Struct)
     println!("-----------------元组结构体(Tuple Struct)-----------------");
     // 结构体必须要有名称，但是结构体的字段可以没有名称，这种结构体长得很像元组，因此被称为元组结构体。
+    // 元组结构体没有命名字段，而是像元组一样使用位置索引（例如 self.0）来访问数据。
     struct Color(i32, i32, i32);
     struct Point(i32, i32, i32);
 
     let _black = Color(0, 0, 0);
+    assert_eq!(_black.1, 0);
     let _origin = Point(0, 0, 0);
+    assert_eq!(_origin.0, 0);
+    assert_eq!(_origin.1, 0);
+    assert_eq!(_origin.2, 0);
+
     // 单元结构体(Unit-like Struct)
     println!("-----------------单元结构体(Unit-like Struct)-----------------");
     // 还记得之前讲过的基本没啥用的单元类型吧？单元结构体就跟它很像，没有任何字段和属性，但是好在，它还挺有用。
